@@ -38,13 +38,13 @@ def _state():
     return get_order_state(sess[0], sess[1])
 
 
-def add_item(name: str, size: str = "") -> str:
-    """Add a beverage to the order. Use exact drink names from the menu (e.g. 'Shaken Espresso', 'Iced Latte'). Size is required - use small, medium, large, or tall, grande, venti depending on the drink."""
+def add_item(name: str, size: str) -> str:
+    """Add a beverage to the order. Use exact drink names from the menu (e.g. 'Shaken Espresso', 'Iced Latte'). Size is required (Tall, Grande, or Venti)."""
     state = _state()
     if not state:
         return "No active order session."
     base_price = get_drink_base_price(name)
-    item_id = state.add_item(name, size=size if size else None, base_price=base_price)
+    item_id = state.add_item(name, size=size, base_price=base_price)
     return f"{{'status': 'success', 'action': 'added_item', 'name': '{name}', 'size': '{size}', 'item_id': '{item_id}'}}"
 
 
