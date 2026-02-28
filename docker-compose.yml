@@ -7,9 +7,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8000:8000"
-    environment:
-      # Pass through the Google API key from the host environment or a .env file
-      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    env_file:
+      - ./backend/.env
     restart: unless-stopped
     volumes:
       # Optional: Mount `.env` if you prefer to use a .env file instead of system environment variables
