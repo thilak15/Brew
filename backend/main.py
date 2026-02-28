@@ -30,8 +30,15 @@ from order_state import (
     unregister_order_state,
 )
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(
+    level=logging.DEBUG, 
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+)
 logger = logging.getLogger(__name__)
+
+# Increase verbosity specifically for the agent frameworks
+logging.getLogger("google.adk").setLevel(logging.DEBUG)
+logging.getLogger("google.genai").setLevel(logging.DEBUG)
 
 APP_NAME = "brew"
 
