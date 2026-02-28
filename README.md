@@ -13,7 +13,25 @@ Brew is a real-time, AI-powered voice ordering system for drive-thrus. It featur
 - **Backend**: Python 3.11+, FastAPI, Google ADK, Gemini Live API (Google AI Studio)
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS
 
-## Quick Start
+## Setup
+
+### Using Docker Compose (Recommended)
+
+1. Make sure you have Docker and Docker Compose installed.
+2. In the `backend/` directory, create a `.env` file from the example and add your `GOOGLE_API_KEY`:
+   ```bash
+   cp backend/.env.example backend/.env
+   # Add your key inside backend/.env
+   ```
+3. Run the complete application stack:
+   ```bash
+   docker-compose up -d --build
+   ```
+
+Both the Next.js frontend (http://localhost:3000) and the FastAPI backend (http://localhost:8000) will start automatically.
+
+<details>
+<summary>Manual Local Setup</summary>
 
 ### 1. Start the Backend
 
@@ -36,7 +54,9 @@ cp .env.local.example .env.local
 npm run dev
 ```
 
-### 3. Usage
+</details>
+
+### Usage
 
 1. Open [http://localhost:3000](http://localhost:3000) in your browser.
 2. Click **Connect**, then **Start mic**.
