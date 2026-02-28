@@ -19,7 +19,6 @@ export function LiveReceipt({ items }: LiveReceiptProps) {
       <ul className="flex-1 overflow-auto space-y-4 py-2 pr-2 custom-scrollbar">
         {items.length === 0 ? (
           <li className="flex flex-col items-center justify-center h-full text-[#8D7B68] space-y-3 opacity-60">
-            <span className="text-4xl">🪴</span>
             <p className="font-medium text-lg">Your cart is empty</p>
           </li>
         ) : (

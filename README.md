@@ -24,7 +24,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 # Add your GOOGLE_API_KEY to backend/.env
-uvicorn main:app --reload --host 0.0.0.0 --port 8000
+uvicorn main:app --reload --reload-exclude '.venv/*' --host 0.0.0.0 --port 8000
 ```
 
 ### 2. Start the Frontend
