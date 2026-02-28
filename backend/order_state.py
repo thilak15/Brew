@@ -15,6 +15,7 @@ def _new_id() -> str:
 
 import logging
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 class OrderState:
     """In-memory order state with undo history."""
