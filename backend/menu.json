@@ -1,0 +1,157 @@
+{
+  "drinks": [
+    {
+      "name": "Iced Latte",
+      "base_price": 4.50,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Hot Latte",
+      "base_price": 4.25,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Shaken Espresso",
+      "base_price": 5.25,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Brown Sugar Shaken Espresso",
+      "base_price": 5.75,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Americano",
+      "base_price": 3.50,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Cappuccino",
+      "base_price": 4.25,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Cold Brew",
+      "base_price": 4.75,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Matcha Latte",
+      "base_price": 5.50,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Chai Latte",
+      "base_price": 4.75,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Mocha",
+      "base_price": 5.00,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Caramel Macchiato",
+      "base_price": 5.25,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    },
+    {
+      "name": "Frappuccino",
+      "base_price": 5.50,
+      "sizes": [
+        "tall",
+        "grande",
+        "venti"
+      ]
+    }
+  ],
+  "modifiers": {
+    "syrup": {
+      "options": [
+        "Vanilla",
+        "Caramel",
+        "Mocha",
+        "Hazelnut",
+        "SF Vanilla",
+        "Sugar-Free Vanilla",
+        "Brown Sugar"
+      ],
+      "default_price_impact": 0.00
+    },
+    "milk_swap": {
+      "options": [
+        "Oat Milk",
+        "Whole Milk",
+        "Almond Milk",
+        "Soy Milk",
+        "Half and Half",
+        "H&H Splash",
+        "Coconut Milk"
+      ],
+      "default_price_impact": 0.50
+    },
+    "topping": {
+      "options": [
+        "Cold Foam",
+        "Matcha Cold Foam",
+        "Matcha blended",
+        "Whipped Cream",
+        "Cinnamon"
+      ],
+      "default_price_impact": 0.75
+    },
+    "ice_level": {
+      "options": [
+        "Light",
+        "Normal",
+        "Extra",
+        "No Ice"
+      ],
+      "default_price_impact": 0.00
+    }
+  }
+}
