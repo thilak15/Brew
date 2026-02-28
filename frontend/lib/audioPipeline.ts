@@ -106,7 +106,7 @@ export function interruptAudioPlayback(): void {
     activeNode.onended = null;
     try {
       activeNode.stop();
-    } catch (e) {
+    } catch {
       // ignore if already stopped
     }
     activeNode = null;

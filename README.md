@@ -25,7 +25,7 @@ Brew is a real-time, AI-powered voice ordering system for drive-thrus. It featur
    ```
 3. Run the complete application stack:
    ```bash
-   docker-compose up -d --build
+   docker compose up -d --build
    ```
 
 Both the Next.js frontend (http://localhost:3000) and the FastAPI backend (http://localhost:8000) will start automatically.
