@@ -13,6 +13,9 @@ def _new_id() -> str:
     return f"item_{uuid.uuid4().hex[:12]}"
 
 
+import logging
+logger = logging.getLogger(__name__)
+
 class OrderState:
     """In-memory order state with undo history."""
 
@@ -41,6 +44,8 @@ class OrderState:
             "base_price": base_price,
             "modifiers": [],
         })
+        logger.info(f"🛒 ORDER_STATE: Added item {name} (Size: {size}) [ID: {item_id}]")
+        logger.info(f"🛒 ORDER_STATE CURRENT ITEMS: {[i['name'] for i in self._items]}")
         return item_id
 
     def remove_item(self, item_id: str) -> bool:
@@ -48,8 +53,11 @@ class OrderState:
         self._push_history()
         for i, item in enumerate(self._items):
             if item["id"] == item_id:
-                self._items.pop(i)
+                removed = self._items.pop(i)
+                logger.info(f"🛒 ORDER_STATE: Removed item {removed['name']} [ID: {item_id}]")
+                logger.info(f"🛒 ORDER_STATE CURRENT ITEMS: {[i['name'] for i in self._items]}")
                 return True
+        logger.warning(f"🛒 ORDER_STATE: Attempted to remove non-existent item [ID: {item_id}]")
         return False
 
     def _find_item(self, item_id: str) -> dict[str, Any] | None:
@@ -69,6 +77,7 @@ class OrderState:
         """Add a modifier (e.g. syrup, milk_swap, topping)."""
         item = self._find_item(item_id)
         if not item:
+            logger.warning(f"🛒 ORDER_STATE: Attempted to add modifier {name} to non-existent item [ID: {item_id}]")
             return False
         self._push_history()
         mod = {
@@ -79,19 +88,23 @@ class OrderState:
         if quantity is not None:
             mod["quantity"] = quantity
         item["modifiers"].append(mod)
+        logger.info(f"🛒 ORDER_STATE: Attached modifier {name} to {item['name']} [ID: {item_id}]")
         return True
 
     def remove_modifier(self, item_id: str, modifier_type: str, value: str) -> bool:
         """Remove first matching modifier by type and name."""
         item = self._find_item(item_id)
         if not item:
+            logger.warning(f"🛒 ORDER_STATE: Attempted to remove modifier {value} from non-existent item [ID: {item_id}]")
             return False
         self._push_history()
         mods = item["modifiers"]
         for i, m in enumerate(mods):
             if m.get("type") == modifier_type and m.get("name", "").lower() == value.lower():
-                mods.pop(i)
+                removed_mod = mods.pop(i)
+                logger.info(f"🛒 ORDER_STATE: Removed modifier {removed_mod['name']} from {item['name']} [ID: {item_id}]")
                 return True
+        logger.warning(f"🛒 ORDER_STATE: Attempted to remove non-existent modifier {value} from {item['name']} [ID: {item_id}]")
         return False
 
     def set_modifier(
@@ -105,6 +118,7 @@ class OrderState:
         """Replace all modifiers of this type with a single one (e.g. milk swap)."""
         item = self._find_item(item_id)
         if not item:
+            logger.warning(f"🛒 ORDER_STATE: Attempted to set modifier {value} on non-existent item [ID: {item_id}]")
             return False
         self._push_history()
         item["modifiers"] = [m for m in item["modifiers"] if m.get("type") != modifier_type]
@@ -116,6 +130,7 @@ class OrderState:
         if quantity is not None:
             mod["quantity"] = quantity
         item["modifiers"].append(mod)
+        logger.info(f"🛒 ORDER_STATE: Overwrote modifier type {modifier_type} with {value} on {item['name']} [ID: {item_id}]")
         return True
 
     def set_ice_level(self, item_id: str, level: str) -> bool:
@@ -125,8 +140,10 @@ class OrderState:
     def undo(self) -> bool:
         """Revert to previous state. Returns True if there was history."""
         if not self._history:
+            logger.warning(f"🛒 ORDER_STATE: Attempted to undo with no history remaining.")
             return False
         self._items = self._history.pop()
+        logger.info(f"🛒 ORDER_STATE: Undid previous action. Restored {len(self._items)} items to cart.")
         return True
 
     def snapshot(self) -> list[dict[str, Any]]:
