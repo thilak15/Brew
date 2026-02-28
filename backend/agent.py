@@ -144,6 +144,19 @@ def undo_last_change() -> str:
     return "{'status': 'error', 'message': 'Nothing to undo.'}"
 
 
+def clear_order() -> str:
+    """Clear all items from the current order. Use this when the customer wants to cancel their entire order."""
+    logger.info(f"👉 TOOL CALL: clear_order()")
+    state = _state()
+    if not state:
+        return "No active order session."
+    if state.clear():
+        logger.info(f"✅ TOOL SUCCESS: Order cleared.")
+        return "{'status': 'success', 'message': 'Order cleared.'}"
+    logger.warning(f"⚠️ TOOL WARNING: Order already empty.")
+    return "{'status': 'error', 'message': 'The order is already empty.'}"
+
+
 def get_order_summary() -> str:
     """Get the current order summary and total price to read back to the customer before completing the order."""
     logger.info(f"👉 TOOL CALL: get_order_summary()")
@@ -189,6 +202,9 @@ root_agent = Agent(
         set_modifier,
         set_ice_level,
         undo_last_change,
+        clear_order,
         get_order_summary,
     ],
 )
+
+TOOL_MAP = {t.__name__: t for t in root_agent.tools}

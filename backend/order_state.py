@@ -147,6 +147,15 @@ class OrderState:
         logger.info(f"🛒 ORDER_STATE: Undid previous action. Restored {len(self._items)} items to cart.")
         return True
 
+    def clear(self) -> bool:
+        """Clear all items from the order."""
+        if not self._items:
+            return False # Nothing to clear
+        self._push_history()
+        self._items = []
+        logger.info(f"🛒 ORDER_STATE: Cleared the order.")
+        return True
+
     def snapshot(self) -> list[dict[str, Any]]:
         """Return full order as list of items for frontend (no history)."""
         return copy.deepcopy(self._items)
