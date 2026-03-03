@@ -9,7 +9,7 @@ import os
 import contextvars
 from google.adk.agents import Agent
 
-from menu import get_system_prompt, get_item_base_price, get_modifier_price_impact
+from menu import get_system_prompt, get_item_base_price, get_modifier_price_impact, get_item_category
 from order_state import get_order_state
 
 # Session identity for the current run_live() task; set in main.py before run_live().
@@ -50,6 +50,11 @@ def add_item(name: str, size: str) -> str:
         return "No active order session."
     base_price = get_item_base_price(name)
     item_id = state.add_item(name, size=size, base_price=base_price)
+    # Auto-switch menu view to the category of the added item
+    category = get_item_category(name)
+    if category and getattr(state, 'menu_context', None) != category:
+        state.menu_context = category
+        logger.info(f"🔄 AUTO-SWITCH: Menu view → {category} (triggered by adding {name})")
     logger.info(f"✅ TOOL SUCCESS: Added item {item_id} | {size} {name}")
     return f"{{'status': 'success', 'action': 'added_item', 'name': '{name}', 'size': '{size}', 'item_id': '{item_id}'}}"
 

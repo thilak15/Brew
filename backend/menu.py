@@ -56,6 +56,20 @@ def get_item_base_price(name: str) -> float:
     return 0.0
 
 
+# Map menu.json keys to display category names
+_CATEGORY_MAP = {"drinks": "Drinks", "breakfast": "Breakfast", "desserts": "Desserts"}
+
+
+def get_item_category(name: str) -> str | None:
+    """Return the display category ('Drinks', 'Breakfast', 'Desserts') for an item, or None."""
+    menu = _load_menu()
+    for key, display in _CATEGORY_MAP.items():
+        for item in menu.get(key, []):
+            if item["name"].lower() == name.lower():
+                return display
+    return None
+
+
 def get_modifier_price_impact(modifier_type: str) -> float:
     """Return default price impact for a modifier type from menu."""
     menu = _load_menu()

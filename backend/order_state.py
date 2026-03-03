@@ -81,6 +81,11 @@ class OrderState:
         if not item:
             logger.warning(f"🛒 ORDER_STATE: Attempted to add modifier {name} to non-existent item [ID: {item_id}]")
             return False
+        # Prevent duplicate modifiers of the same type+name
+        for existing in item["modifiers"]:
+            if existing["type"] == modifier_type and existing["name"] == name:
+                logger.info(f"🛒 ORDER_STATE: Modifier {name} already exists on {item['name']} [ID: {item_id}], skipping duplicate")
+                return True
         self._push_history()
         mod = {
             "type": modifier_type,
