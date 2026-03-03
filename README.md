@@ -236,8 +236,4 @@ Brew/
 
 This project was built for the [Google Agent Development Kit Hackathon](https://googleadk.devpost.com/).
 
----
 
-<p align="center">
-  <strong>Built with ❤️ using Google ADK + Gemini Live</strong>
-</p>
