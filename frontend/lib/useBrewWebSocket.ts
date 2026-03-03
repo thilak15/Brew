@@ -4,11 +4,23 @@ import { useCallback, useEffect, useRef } from "react";
 import type { BrewAction } from "./orderReducer";
 import { interruptAudioPlayback } from "./audioPipeline";
 
-const WS_URL =
-  typeof window !== "undefined"
-    ? (process.env.NEXT_PUBLIC_WS_URL ||
-      `ws://${window.location.hostname}:8000`)
-    : "";
+function getWsUrl(): string {
+  if (typeof window === "undefined") return "";
+  // 1. Explicit env var always wins (set at build time for Cloud Run)
+  if (process.env.NEXT_PUBLIC_WS_URL) return process.env.NEXT_PUBLIC_WS_URL;
+  // 2. Local development fallback
+  if (
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1"
+  ) {
+    return `ws://localhost:8000`;
+  }
+  // 3. Production: derive wss:// URL from current page (same domain, port 8000 not applicable)
+  const proto = window.location.protocol === "https:" ? "wss:" : "ws:";
+  return `${proto}//${window.location.hostname}:8000`;
+}
+
+const WS_URL = getWsUrl();
 
 export type UseBrewWebSocketOptions = {
   user_id?: string;

@@ -16,8 +16,10 @@ COPY . .
 # Set environment variables
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# NextJS default port mapping, can be overridden via docker-compose
-ENV NEXT_PUBLIC_WS_URL=ws://localhost:8000 
+# WS URL: overridable at build time for cloud deployment.
+# Default works for local Docker Compose.
+ARG NEXT_PUBLIC_WS_URL=ws://localhost:8000
+ENV NEXT_PUBLIC_WS_URL=${NEXT_PUBLIC_WS_URL}
 
 # Build the Next.js application
 RUN npm run build

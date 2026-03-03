@@ -16,7 +16,9 @@ warnings.filterwarnings(
 
 import json
 import logging
+import os
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.agents.live_request_queue import LiveRequestQueue
 from google.adk.runners import Runner
@@ -65,6 +67,16 @@ logging.getLogger("google.genai").setLevel(logging.DEBUG)
 APP_NAME = "brew"
 
 app = FastAPI(title="Brew")
+
+# CORS: allow cross-origin for Cloud Run (frontend + backend on different domains)
+allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 session_service = InMemorySessionService()
 runner = Runner(
     app_name=APP_NAME,

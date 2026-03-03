@@ -146,7 +146,81 @@ npm run dev
 
 </details>
 
----
+<details>
+<summary><strong>☁️ Deploy to Google Cloud Run</strong></summary>
+
+### Prerequisites
+
+- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed
+- A GCP project with billing enabled
+- Your `GOOGLE_API_KEY` from [Google AI Studio](https://aistudio.google.com/apikey)
+
+### 1. Set Up GCP
+
+```bash
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+gcloud services enable run.googleapis.com artifactregistry.googleapis.com
+```
+
+### 2. Create Artifact Registry
+
+```bash
+gcloud artifacts repositories create brew-repo \
+  --repository-format=docker \
+  --location=us-central1
+
+gcloud auth configure-docker us-central1-docker.pkg.dev
+```
+
+### 3. Deploy Backend
+
+```bash
+# Build & push
+docker build -t us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend ./backend
+docker push us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend
+
+# Deploy to Cloud Run
+gcloud run deploy brew-backend \
+  --image us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend \
+  --region us-central1 \
+  --port 8000 \
+  --allow-unauthenticated \
+  --set-env-vars "GOOGLE_API_KEY=YOUR_API_KEY,GOOGLE_GENAI_USE_VERTEXAI=FALSE" \
+  --memory 512Mi \
+  --timeout 300 \
+  --session-affinity
+```
+
+> Note the backend URL from the output (e.g., `https://brew-backend-xxxxx-uc.a.run.app`)
+
+### 4. Deploy Frontend
+
+```bash
+# Build with the backend URL from Step 3
+docker build \
+  --build-arg NEXT_PUBLIC_WS_URL=wss://brew-backend-xxxxx-uc.a.run.app \
+  -t us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend \
+  ./frontend
+
+docker push us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend
+
+# Deploy to Cloud Run
+gcloud run deploy brew-frontend \
+  --image us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend \
+  --region us-central1 \
+  --port 3000 \
+  --allow-unauthenticated \
+  --memory 256Mi
+```
+
+### 5. Access Your App
+
+Open the frontend URL from the deploy output (e.g., `https://brew-frontend-xxxxx-uc.a.run.app`).
+
+> **Cost:** Cloud Run free tier includes 2M requests/month — a hackathon demo costs ~$0.
+
+</details>
 
 ## 📁 Project Structure
 
