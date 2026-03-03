@@ -42,7 +42,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 def add_item(name: str, size: str) -> str:
-    """Add a beverage to the order. Use exact drink names from the menu (e.g. 'Shaken Espresso', 'Iced Latte'). Size is required (Tall, Grande, or Venti)."""
+    """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'."""
     logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}')")
     state = _state()
     if not state:
