@@ -17,7 +17,16 @@ const WELCOME_TRIGGER = "System: A car has just pulled up to the drive-thru spea
 export default function Home() {
   const [state, dispatch] = useReducer(brewReducer, getInitialState());
   const [connect, setConnect] = useState(false);
-  const [sessionId, setSessionId] = useState(() => `session_${Math.random().toString(36).substring(2, 9)}`);
+  const [sessionId, setSessionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('brew_session_id');
+      if (stored) return stored;
+      const newId = `session_${Math.random().toString(36).substring(2, 9)}`;
+      localStorage.setItem('brew_session_id', newId);
+      return newId;
+    }
+    return `session_new`;
+  });
   const [micActive, setMicActive] = useState(false);
   const [autoStarted, setAutoStarted] = useState(false);
   const stopMicRef = useRef<(() => void) | null>(null);
@@ -76,7 +85,9 @@ export default function Home() {
             <button
               type="button"
               onClick={() => {
-                setSessionId(`session_${Math.random().toString(36).substring(2, 9)}`);
+                const newId = `session_${Math.random().toString(36).substring(2, 9)}`;
+                localStorage.setItem('brew_session_id', newId);
+                setSessionId(newId);
                 dispatch({ type: "ORDER_STATE", payload: [] });
                 setConnect(true);
                 setAutoStarted(false);

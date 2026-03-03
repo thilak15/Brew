@@ -2,10 +2,9 @@
 
 /**
  * Capture microphone at 16 kHz mono, 16-bit PCM, and send chunks via callback.
- * Browser typically gives 44.1k or 48k; we downsample to 16k and convert float to int16.
+ * Uses AudioWorklet (modern, off-main-thread) with a ScriptProcessor fallback.
  */
 const TARGET_SAMPLE_RATE = 16000;
-const CHUNK_MS = 80;
 
 export async function startMicCapture(
   onChunk: (buffer: ArrayBuffer) => void
@@ -13,10 +12,33 @@ export async function startMicCapture(
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const ctx = new AudioContext({ sampleRate: 48000 });
   const source = ctx.createMediaStreamSource(stream);
-  const rate = ctx.sampleRate;
 
-  // createScriptProcessor requires buffer size to be a power of 2 in [256, 16384]
-  const desired = Math.floor((rate * CHUNK_MS) / 1000);
+  // Try AudioWorklet first, fall back to ScriptProcessor
+  if (ctx.audioWorklet) {
+    try {
+      await ctx.audioWorklet.addModule('/audio-processor.js');
+      const workletNode = new AudioWorkletNode(ctx, 'pcm-capture-processor');
+      workletNode.port.onmessage = (e: MessageEvent) => {
+        onChunk(e.data as ArrayBuffer);
+      };
+      source.connect(workletNode);
+      workletNode.connect(ctx.destination);
+
+      return () => {
+        workletNode.port.close();
+        workletNode.disconnect();
+        source.disconnect();
+        stream.getTracks().forEach((t) => t.stop());
+        ctx.close();
+      };
+    } catch (err) {
+      console.warn('AudioWorklet failed, falling back to ScriptProcessor:', err);
+    }
+  }
+
+  // Fallback: deprecated ScriptProcessor for older browsers
+  const rate = ctx.sampleRate;
+  const desired = Math.floor((rate * 80) / 1000);
   const bufferSize = Math.min(
     16384,
     Math.max(256, Math.pow(2, Math.round(Math.log2(desired))))

@@ -30,10 +30,32 @@ from order_state import (
     unregister_order_state,
 )
 
-logging.basicConfig(
-    level=logging.DEBUG, 
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+from pathlib import Path
+
+LOG_DIR = Path("/app/debug_logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "backend.log"
+
+# Logging setup
+LOG_DIR = Path("/app/debug_logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "backend.log"
+
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+root_logger.addHandler(logging.StreamHandler())
+root_logger.addHandler(file_handler)
+
+# Specific loggers for visibility
+for logger_name in ["google.adk", "google.genai", "uvicorn", "uvicorn.access"]:
+    l = logging.getLogger(logger_name)
+    l.setLevel(logging.DEBUG)
+    l.addHandler(file_handler)
+
 logger = logging.getLogger(__name__)
 
 # Increase verbosity specifically for the agent frameworks
@@ -120,6 +142,7 @@ async def websocket_endpoint(
         async def downstream_task() -> None:
             set_current_session(user_id, session_id)
             last_order_snapshot: list | None = None
+            last_menu_context: str | None = None
             try:
                 async for event in runner.run_live(
                     user_id=user_id,
@@ -140,6 +163,37 @@ async def websocket_endpoint(
                             )
                         )
                         continue
+                    # ALWAYS check and send order state + menu context, even for thought events
+                    order = get_order_state(user_id, session_id)
+                    if order:
+                        current = order.snapshot()
+                        if current != last_order_snapshot:
+                            last_order_snapshot = current
+                            await websocket.send_text(
+                                json.dumps({"type": "order_state", "payload": current})
+                            )
+                        
+                        if getattr(order, 'menu_context', None) != last_menu_context:
+                            last_menu_context = order.menu_context
+                            await websocket.send_text(
+                                json.dumps({"type": "ui_context_change", "context": order.menu_context})
+                            )
+                    # Skip thought-only events (internal AI reasoning with no audio)
+                    # These cause silence because the frontend receives content but no audio to play.
+                    # NEVER skip events that contain function_call or function_response parts.
+                    if event.content and event.content.parts:
+                        has_function = any(
+                            getattr(p, 'function_call', None) or getattr(p, 'function_response', None)
+                            for p in event.content.parts
+                        )
+                        if not has_function:
+                            is_thought_only = all(
+                                getattr(p, 'thought', False) and not getattr(p, 'inline_data', None)
+                                for p in event.content.parts
+                            )
+                            if is_thought_only:
+                                logger.debug("Skipping thought-only event (no audio)")
+                                continue
                     has_audio = (
                         event.content
                         and event.content.parts
@@ -166,15 +220,6 @@ async def websocket_endpoint(
                         await websocket.send_text(
                             event.model_dump_json(exclude_none=True, by_alias=True)
                         )
-                    # Send order state whenever it changes (tools are executed internally by ADK)
-                    order = get_order_state(user_id, session_id)
-                    if order:
-                        current = order.snapshot()
-                        if current != last_order_snapshot:
-                            last_order_snapshot = current
-                            await websocket.send_text(
-                                json.dumps({"type": "order_state", "payload": current})
-                            )
             except asyncio.CancelledError:
                 pass
             except Exception as e:

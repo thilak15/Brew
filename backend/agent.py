@@ -9,7 +9,7 @@ import os
 import contextvars
 from google.adk.agents import Agent
 
-from menu import get_system_prompt, get_drink_base_price, get_modifier_price_impact
+from menu import get_system_prompt, get_item_base_price, get_modifier_price_impact, get_item_category
 from order_state import get_order_state
 
 # Session identity for the current run_live() task; set in main.py before run_live().
@@ -42,14 +42,19 @@ import logging
 logger = logging.getLogger(__name__)
 
 def add_item(name: str, size: str) -> str:
-    """Add a beverage to the order. Use exact drink names from the menu (e.g. 'Shaken Espresso', 'Iced Latte'). Size is required (Tall, Grande, or Venti)."""
+    """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'."""
     logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}')")
     state = _state()
     if not state:
         logger.error("❌ TOOL CALL FAILED: No active order session.")
         return "No active order session."
-    base_price = get_drink_base_price(name)
+    base_price = get_item_base_price(name)
     item_id = state.add_item(name, size=size, base_price=base_price)
+    # Auto-switch menu view to the category of the added item
+    category = get_item_category(name)
+    if category and getattr(state, 'menu_context', None) != category:
+        state.menu_context = category
+        logger.info(f"🔄 AUTO-SWITCH: Menu view → {category} (triggered by adding {name})")
     logger.info(f"✅ TOOL SUCCESS: Added item {item_id} | {size} {name}")
     return f"{{'status': 'success', 'action': 'added_item', 'name': '{name}', 'size': '{size}', 'item_id': '{item_id}'}}"
 
@@ -157,6 +162,28 @@ def clear_order() -> str:
     return "{'status': 'error', 'message': 'The order is already empty.'}"
 
 
+def set_menu_view(category: str) -> str:
+    """
+    Switch the visual menu tab shown on the customer's screen.
+    Args:
+        category: Must be one of 'Drinks', 'Breakfast', or 'Desserts'.
+    """
+    valid_categories = ["Drinks", "Breakfast", "Desserts"]
+    normalized = category.strip().title()
+    if normalized not in valid_categories:
+        return f"Error: Category must be one of {valid_categories}"
+        
+    logger.info(f"👉 TOOL CALL: set_menu_view(category='{normalized}')")
+    state = _state()
+    if state:
+        state.menu_context = normalized
+        logger.info(f"✅ TOOL SUCCESS: Switched menu view to {normalized}.")
+    else:
+        logger.warning(f"⚠️ TOOL WARNING: No active order to attach UI context to.")
+        
+    return f"Successfully switched menu view to {normalized}."
+
+
 def get_order_summary() -> str:
     """Get the current order summary and total price to read back to the customer before completing the order."""
     logger.info(f"👉 TOOL CALL: get_order_summary()")
@@ -203,6 +230,7 @@ root_agent = Agent(
         set_ice_level,
         undo_last_change,
         clear_order,
+        set_menu_view,
         get_order_summary,
     ],
 )

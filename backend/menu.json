@@ -153,6 +153,87 @@
         "No Ice"
       ],
       "default_price_impact": 0.00
+    },
+    "warming": {
+      "options": [
+        "Warmed",
+        "Not Warmed"
+      ],
+      "default_price_impact": 0.00
     }
-  }
+  },
+  "breakfast": [
+    {
+      "name": "Bacon & Gouda Sandwich",
+      "base_price": 5.45,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Spinach Feta Wrap",
+      "base_price": 4.95,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Ham & Swiss Croissant",
+      "base_price": 5.25,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Egg Bites",
+      "base_price": 4.95,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Butter Croissant",
+      "base_price": 3.25,
+      "sizes": [
+        "Regular"
+      ]
+    }
+  ],
+  "desserts": [
+    {
+      "name": "Chocolate Chip Cookie",
+      "base_price": 2.95,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Fudge Brownie",
+      "base_price": 3.45,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Blueberry Muffin",
+      "base_price": 3.25,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Lemon Loaf",
+      "base_price": 3.45,
+      "sizes": [
+        "Regular"
+      ]
+    },
+    {
+      "name": "Cake Pop",
+      "base_price": 2.25,
+      "sizes": [
+        "Regular"
+      ]
+    }
+  ]
 }
