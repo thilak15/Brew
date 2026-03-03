@@ -230,10 +230,7 @@ Brew/
 | `GOOGLE_GENAI_USE_VERTEXAI` | ✅ | Set to `FALSE` (uses AI Studio, not Vertex) |
 | `BREW_AGENT_MODEL` | ❌ | Override AI model (default: `gemini-2.5-flash-native-audio-preview-12-2025`) |
 
----
 
 ## 📝 License
 
-This project was built for the [Google Agent Development Kit Hackathon](https://googleadk.devpost.com/).
-
-
+This project is licensed under the [MIT License](LICENSE).
