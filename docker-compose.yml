@@ -13,6 +13,7 @@ services:
     volumes:
       # Optional: Mount `.env` if you prefer to use a .env file instead of system environment variables
       - ./backend/.env:/app/.env
+      - ./debug_logs:/app/debug_logs
 
   frontend:
     build:

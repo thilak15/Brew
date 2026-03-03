@@ -30,10 +30,32 @@ from order_state import (
     unregister_order_state,
 )
 
-logging.basicConfig(
-    level=logging.DEBUG, 
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+from pathlib import Path
+
+LOG_DIR = Path("/app/debug_logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "backend.log"
+
+# Logging setup
+LOG_DIR = Path("/app/debug_logs")
+LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_FILE = LOG_DIR / "backend.log"
+
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+file_handler = logging.FileHandler(LOG_FILE)
+file_handler.setFormatter(formatter)
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.DEBUG)
+root_logger.addHandler(logging.StreamHandler())
+root_logger.addHandler(file_handler)
+
+# Specific loggers for visibility
+for logger_name in ["google.adk", "google.genai", "uvicorn", "uvicorn.access"]:
+    l = logging.getLogger(logger_name)
+    l.setLevel(logging.DEBUG)
+    l.addHandler(file_handler)
+
 logger = logging.getLogger(__name__)
 
 # Increase verbosity specifically for the agent frameworks
@@ -120,6 +142,7 @@ async def websocket_endpoint(
         async def downstream_task() -> None:
             set_current_session(user_id, session_id)
             last_order_snapshot: list | None = None
+            last_menu_context: str | None = None
             try:
                 async for event in runner.run_live(
                     user_id=user_id,
@@ -174,6 +197,13 @@ async def websocket_endpoint(
                             last_order_snapshot = current
                             await websocket.send_text(
                                 json.dumps({"type": "order_state", "payload": current})
+                            )
+                        
+                        # Also track the new menu context we added
+                        if getattr(order, 'menu_context', None) != locals().get('last_menu_context'):
+                            last_menu_context = order.menu_context
+                            await websocket.send_text(
+                                json.dumps({"type": "ui_context_change", "context": order.menu_context})
                             )
             except asyncio.CancelledError:
                 pass

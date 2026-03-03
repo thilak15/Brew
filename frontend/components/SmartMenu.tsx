@@ -1,19 +1,36 @@
 "use client";
 
 import Image from "next/image";
+import { useState, useEffect } from "react";
 
-const MENU_ITEMS = [
-  "Iced Latte",
-  "Hot Latte",
-  "Shaken Espresso",
-  "Brown Sugar Shaken Espresso",
-  "Americano",
-  "Cappuccino",
-  "Cold Brew",
-  "Matcha Latte",
-  "Chai Latte",
-  "Mocha",
-];
+const MENU_CATEGORIES = {
+  Drinks: [
+    "Iced Latte",
+    "Hot Latte",
+    "Shaken Espresso",
+    "Brown Sugar Shaken Espresso",
+    "Americano",
+    "Cappuccino",
+    "Cold Brew",
+    "Matcha Latte",
+    "Chai Latte",
+    "Mocha",
+  ],
+  Breakfast: [
+    "Bacon & Gouda Sandwich",
+    "Spinach Feta Wrap",
+    "Ham & Swiss Croissant",
+    "Egg Bites",
+    "Butter Croissant",
+  ],
+  Desserts: [
+    "Chocolate Chip Cookie",
+    "Fudge Brownie",
+    "Blueberry Muffin",
+    "Lemon Loaf",
+    "Cake Pop",
+  ],
+};
 
 function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
@@ -24,7 +41,21 @@ type SmartMenuProps = {
 };
 
 export function SmartMenu({ menuContext }: SmartMenuProps) {
+  const [activeTab, setActiveTab] = useState<"Drinks" | "Breakfast" | "Desserts">("Drinks");
+
   const contextLower = String(menuContext ?? "").toLowerCase();
+
+  // Update local active tab if the AI sends down a category context switch
+  useEffect(() => {
+    if (contextLower.includes("breakfast")) {
+      setActiveTab("Breakfast");
+    } else if (contextLower.includes("desserts")) {
+      setActiveTab("Desserts");
+    } else if (contextLower.includes("drinks")) {
+      setActiveTab("Drinks");
+    }
+  }, [contextLower]);
+
   const highlightVegan =
     contextLower.includes("vegan") ||
     contextLower.includes("oat") ||
@@ -35,21 +66,40 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
     contextLower.includes("no dairy");
 
   return (
-    <div className="flex flex-col gap-4 p-6 bg-white h-full">
-      <div className="flex items-center gap-3 border-b-2 border-[#FAF4ED] pb-3">
-        <h2 className="text-2xl font-bold text-[#4A3219]">Menu</h2>
+    <div className="flex flex-col gap-4 p-6 bg-white h-full relative">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-[#FAF4ED] pb-3">
+        <h2 className="text-2xl font-bold text-[#4A3219] shrink-0">Menu</h2>
+
+        {/* Category Tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+          {(Object.keys(MENU_CATEGORIES) as Array<keyof typeof MENU_CATEGORIES>).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${activeTab === tab
+                  ? "bg-[#D4A373] text-white shadow-sm"
+                  : "bg-[#FAF4ED] text-[#8D7B68] hover:bg-[#E8DCCB]"
+                }`}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
       </div>
+
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-auto pb-4 pr-2 custom-scrollbar">
-        {MENU_ITEMS.map((name) => {
-          const isVegan = ["Matcha Latte", "Chai Latte", "Americano", "Cold Brew"].includes(name);
+        {MENU_CATEGORIES[activeTab].map((name) => {
+          const isVeganDrink = activeTab === "Drinks" && ["Matcha Latte", "Chai Latte", "Americano", "Cold Brew"].includes(name);
+
           let className = "flex items-center gap-4 p-3 rounded-2xl border transition-all duration-200 shadow-sm ";
-          if (highlightVegan && isVegan) {
+          if (highlightVegan && isVeganDrink) {
             className += " bg-[#E8F3E8] border-[#A3B899] ring-2 ring-[#A3B899]/50 transform -translate-y-1 shadow-md";
-          } else if (grayDairy && !isVegan) {
+          } else if (grayDairy && !isVeganDrink && activeTab === "Drinks") {
             className += " bg-gray-50 border-gray-100 opacity-60 grayscale-[0.5]";
           } else {
             className += " bg-white border-[#E8DCCB] hover:border-[#D4A373] hover:shadow-md hover:-translate-y-1 cursor-default";
           }
+
           const imgSrc = `/images/menu/${slug(name)}.png`;
           return (
             <li key={name} className={className}>
@@ -61,11 +111,11 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
                   className="object-cover w-full h-full rounded-lg"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
-                    (e.target as HTMLElement).parentElement!.innerHTML = "☕️";
+                    (e.target as HTMLElement).parentElement!.innerHTML = activeTab === "Drinks" ? "☕️" : activeTab === "Breakfast" ? "🍳" : "🍪";
                   }}
                 />
               </div>
-              <span className="font-semibold text-[#4A3219] leading-tight">{name}</span>
+              <span className="font-semibold text-[#4A3219] leading-tight flex-1">{name}</span>
             </li>
           );
         })}

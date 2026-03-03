@@ -25,6 +25,7 @@ class OrderState:
     def __init__(self) -> None:
         self._items: list[dict[str, Any]] = []
         self._history: list[list[dict[str, Any]]] = []
+        self.menu_context: str = "Drinks"
 
     def _push_history(self) -> None:
         snapshot = copy.deepcopy(self._items)

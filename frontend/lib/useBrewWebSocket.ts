@@ -94,7 +94,9 @@ export function useBrewWebSocket({
               ? msg.inputTranscription
               : (msg.inputTranscription as { text?: string })?.text ?? String(msg.inputTranscription);
           d({ type: "TRANSCRIPT", text });
-          d({ type: "MENU_CONTEXT", context: text });
+        }
+        if (msg.type === "ui_context_change" && msg.context) {
+          d({ type: "MENU_CONTEXT", context: msg.context });
         }
         if (msg.content?.parts) {
           const hasAudio = msg.content.parts.some(

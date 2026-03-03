@@ -22,11 +22,19 @@ def get_system_prompt() -> str:
         prompt_template = f.read().strip()
         
     menu_lines = ["DRINKS:"]
-    for d in menu["drinks"]:
+    for d in menu.get("drinks", []):
         menu_lines.append(f"  - {d['name']} (base ${d['base_price']:.2f}, sizes: {', '.join(d['sizes'])})")
-    menu_lines.append("")
-    menu_lines.append("MODIFIERS:")
-    for mod_type, data in menu["modifiers"].items():
+        
+    menu_lines.append("\nBREAKFAST:")
+    for b in menu.get("breakfast", []):
+        menu_lines.append(f"  - {b['name']} (base ${b['base_price']:.2f}, sizes: {', '.join(b['sizes'])})")
+        
+    menu_lines.append("\nDESSERTS:")
+    for s in menu.get("desserts", []):
+        menu_lines.append(f"  - {s['name']} (base ${s['base_price']:.2f}, sizes: {', '.join(s['sizes'])})")
+
+    menu_lines.append("\nMODIFIERS:")
+    for mod_type, data in menu.get("modifiers", {}).items():
         menu_lines.append(f"  {mod_type}: {', '.join(data['options'])}")
         
     menu_text = "\n".join(menu_lines)
@@ -38,12 +46,13 @@ def get_menu_dict() -> dict:
     return _load_menu()
 
 
-def get_drink_base_price(name: str) -> float:
-    """Return base price for a drink by name, or 0.0 if not found."""
+def get_item_base_price(name: str) -> float:
+    """Return base price for an item (drink/food) by name, or 0.0 if not found."""
     menu = _load_menu()
-    for d in menu["drinks"]:
-        if d["name"].lower() == name.lower():
-            return float(d["base_price"])
+    for category in ["drinks", "breakfast", "desserts"]:
+        for item in menu.get(category, []):
+            if item["name"].lower() == name.lower():
+                return float(item["base_price"])
     return 0.0
 
 
