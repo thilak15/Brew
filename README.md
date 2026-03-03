@@ -149,76 +149,33 @@ npm run dev
 <details>
 <summary><strong>☁️ Deploy to Google Cloud Run</strong></summary>
 
-### Prerequisites
-
-- [Google Cloud SDK](https://cloud.google.com/sdk/docs/install) installed
-- A GCP project with billing enabled
-- Your `GOOGLE_API_KEY` from [Google AI Studio](https://aistudio.google.com/apikey)
-
-### 1. Set Up GCP
+One command deploys everything:
 
 ```bash
-gcloud auth login
-gcloud config set project YOUR_PROJECT_ID
-gcloud services enable run.googleapis.com artifactregistry.googleapis.com
+./deploy.sh
 ```
 
-### 2. Create Artifact Registry
+The script will:
+1. Check/install `gcloud` CLI
+2. Authenticate with GCP
+3. Enable required APIs
+4. Create Artifact Registry
+5. Build & push backend → deploy to Cloud Run
+6. Build & push frontend (with backend URL) → deploy to Cloud Run
+7. Print your live URLs
+
+You can also pass arguments directly:
 
 ```bash
-gcloud artifacts repositories create brew-repo \
-  --repository-format=docker \
-  --location=us-central1
-
-gcloud auth configure-docker us-central1-docker.pkg.dev
+./deploy.sh --project YOUR_PROJECT_ID --api-key YOUR_API_KEY --region us-central1
 ```
 
-### 3. Deploy Backend
+**To tear down:**
 
 ```bash
-# Build & push
-docker build -t us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend ./backend
-docker push us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend
-
-# Deploy to Cloud Run
-gcloud run deploy brew-backend \
-  --image us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-backend \
-  --region us-central1 \
-  --port 8000 \
-  --allow-unauthenticated \
-  --set-env-vars "GOOGLE_API_KEY=YOUR_API_KEY,GOOGLE_GENAI_USE_VERTEXAI=FALSE" \
-  --memory 512Mi \
-  --timeout 300 \
-  --session-affinity
+gcloud run services delete brew-frontend --region us-central1 --quiet
+gcloud run services delete brew-backend --region us-central1 --quiet
 ```
-
-> Note the backend URL from the output (e.g., `https://brew-backend-xxxxx-uc.a.run.app`)
-
-### 4. Deploy Frontend
-
-```bash
-# Build with the backend URL from Step 3
-docker build \
-  --build-arg NEXT_PUBLIC_WS_URL=wss://brew-backend-xxxxx-uc.a.run.app \
-  -t us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend \
-  ./frontend
-
-docker push us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend
-
-# Deploy to Cloud Run
-gcloud run deploy brew-frontend \
-  --image us-central1-docker.pkg.dev/YOUR_PROJECT_ID/brew-repo/brew-frontend \
-  --region us-central1 \
-  --port 3000 \
-  --allow-unauthenticated \
-  --memory 256Mi
-```
-
-### 5. Access Your App
-
-Open the frontend URL from the deploy output (e.g., `https://brew-frontend-xxxxx-uc.a.run.app`).
-
-> **Cost:** Cloud Run free tier includes 2M requests/month — a hackathon demo costs ~$0.
 
 </details>
 
