@@ -163,6 +163,21 @@ async def websocket_endpoint(
                             )
                         )
                         continue
+                    # ALWAYS check and send order state + menu context, even for thought events
+                    order = get_order_state(user_id, session_id)
+                    if order:
+                        current = order.snapshot()
+                        if current != last_order_snapshot:
+                            last_order_snapshot = current
+                            await websocket.send_text(
+                                json.dumps({"type": "order_state", "payload": current})
+                            )
+                        
+                        if getattr(order, 'menu_context', None) != last_menu_context:
+                            last_menu_context = order.menu_context
+                            await websocket.send_text(
+                                json.dumps({"type": "ui_context_change", "context": order.menu_context})
+                            )
                     # Skip thought-only events (internal AI reasoning with no audio)
                     # These cause silence because the frontend receives content but no audio to play.
                     if event.content and event.content.parts:
@@ -199,22 +214,6 @@ async def websocket_endpoint(
                         await websocket.send_text(
                             event.model_dump_json(exclude_none=True, by_alias=True)
                         )
-                    # Send order state whenever it changes (tools are executed internally by ADK)
-                    order = get_order_state(user_id, session_id)
-                    if order:
-                        current = order.snapshot()
-                        if current != last_order_snapshot:
-                            last_order_snapshot = current
-                            await websocket.send_text(
-                                json.dumps({"type": "order_state", "payload": current})
-                            )
-                        
-                        # Also track the new menu context we added
-                        if getattr(order, 'menu_context', None) != locals().get('last_menu_context'):
-                            last_menu_context = order.menu_context
-                            await websocket.send_text(
-                                json.dumps({"type": "ui_context_change", "context": order.menu_context})
-                            )
             except asyncio.CancelledError:
                 pass
             except Exception as e:
