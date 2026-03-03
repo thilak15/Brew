@@ -15,6 +15,8 @@ const MENU_CATEGORIES = {
     "Matcha Latte",
     "Chai Latte",
     "Mocha",
+    "Caramel Macchiato",
+    "Frappuccino",
   ],
   Breakfast: [
     "Bacon & Gouda Sandwich",
@@ -77,8 +79,8 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
               key={tab}
               onClick={() => setActiveTab(tab)}
               className={`px-4 py-1.5 text-sm font-semibold rounded-full transition-colors whitespace-nowrap ${activeTab === tab
-                  ? "bg-[#D4A373] text-white shadow-sm"
-                  : "bg-[#FAF4ED] text-[#8D7B68] hover:bg-[#E8DCCB]"
+                ? "bg-[#D4A373] text-white shadow-sm"
+                : "bg-[#FAF4ED] text-[#8D7B68] hover:bg-[#E8DCCB]"
                 }`}
             >
               {tab}

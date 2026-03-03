@@ -163,6 +163,16 @@ async def websocket_endpoint(
                             )
                         )
                         continue
+                    # Skip thought-only events (internal AI reasoning with no audio)
+                    # These cause silence because the frontend receives content but no audio to play.
+                    if event.content and event.content.parts:
+                        is_thought_only = all(
+                            getattr(p, 'thought', False) and not getattr(p, 'inline_data', None)
+                            for p in event.content.parts
+                        )
+                        if is_thought_only:
+                            logger.debug("Skipping thought-only event (no audio)")
+                            continue
                     has_audio = (
                         event.content
                         and event.content.parts
