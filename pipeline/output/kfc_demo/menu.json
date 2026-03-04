@@ -1,0 +1,1146 @@
+{
+  "restaurant": {
+    "restaurant_id": "kfc_demo",
+    "name": "kfc",
+    "type": "chicken",
+    "currency": "USD",
+    "drive_through": true,
+    "notes": "Prices and availability may vary by location. Please check your local KFC for exact details. Tax extra."
+  },
+  "categories": [
+    "Limited Time Offers",
+    "Buckets",
+    "Chicken Meals",
+    "Chicken Sandwiches",
+    "Pot Pies & Bowls",
+    "Family Deals",
+    "Sides",
+    "Sauces",
+    "Desserts",
+    "Drinks"
+  ],
+  "items": [
+    {
+      "id": "kfc_mac_cheese_bowl_spicy",
+      "name": "KFC Mac & Cheese Bowl (Spicy)",
+      "category": "Limited Time Offers",
+      "description": "Spicy, crunchy fried chicken & a drizzle of Nashville Hot Sauce over creamy mac & cheese.",
+      "base_price": 7.79,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "limited_time",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_mac_cheese_bowl",
+      "name": "KFC Mac & Cheese Bowl",
+      "category": "Limited Time Offers",
+      "description": "Creamy mac & cheese topped with crispy fried chicken and a sprinkle of three-cheese blend.",
+      "base_price": 7.79,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "limited_time",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "12_pc_fried_chicken_bucket",
+      "name": "12 pc. Fried Chicken Bucket",
+      "category": "Buckets",
+      "description": "12 pieces of our world-famous fried chicken.",
+      "base_price": 34.99,
+      "sizes": [
+        "12 pc"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "8_pc_fried_chicken_bucket",
+      "name": "8 pc. Fried Chicken Bucket",
+      "category": "Buckets",
+      "description": "8 pieces of our world-famous fried chicken.",
+      "base_price": 26.99,
+      "sizes": [
+        "8 pc"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "6_pc_fried_chicken_bucket",
+      "name": "6 pc. Fried Chicken Bucket",
+      "category": "Buckets",
+      "description": "6 pieces of our world-famous fried chicken.",
+      "base_price": 20.99,
+      "sizes": [
+        "6 pc"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "16_pc_fried_chicken_bucket",
+      "name": "16 pc. Fried Chicken Bucket",
+      "category": "Buckets",
+      "description": "16 pieces of our world-famous fried chicken.",
+      "base_price": 42.99,
+      "sizes": [
+        "16 pc"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "fried_chicken_2_pc",
+      "name": "2 pc. Fried Chicken",
+      "category": "Chicken Meals",
+      "description": "Two pieces of our world-famous fried chicken.",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "fried_chicken_3_pc",
+      "name": "3 pc. Fried Chicken",
+      "category": "Chicken Meals",
+      "description": "Three pieces of our world-famous fried chicken.",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "crispy_strips_3_pc",
+      "name": "3 pc. Crispy Strips",
+      "category": "Chicken Meals",
+      "description": "Three of our crispy, juicy chicken strips.",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "crispy_strips_5_pc",
+      "name": "5 pc. Crispy Strips",
+      "category": "Chicken Meals",
+      "description": "Five of our crispy, juicy chicken strips.",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "popcorn_chicken",
+      "name": "Popcorn Chicken",
+      "category": "Chicken Meals",
+      "description": "Bite-sized pieces of our crispy chicken.",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_classic_chicken_sandwich",
+      "name": "KFC Classic Chicken Sandwich",
+      "category": "Chicken Sandwiches",
+      "description": "Our fried chicken sandwich, available in classic or spicy.",
+      "base_price": 6.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "flavor": [
+            "classic",
+            "spicy"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "famous_bowl",
+      "name": "Famous Bowl",
+      "category": "Pot Pies & Bowls",
+      "description": "Creamy mashed potatoes, sweet corn and bite-sized crispy chicken layered together and drizzled with gravy and topped with a three-cheese blend.",
+      "base_price": 7.79,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "chicken_pot_pie",
+      "name": "Chicken Pot Pie",
+      "category": "Pot Pies & Bowls",
+      "description": "Our savory pot pie with chunks of chicken, diced potatoes, peas, carrots and a creamy sauce baked in a golden flaky crust.",
+      "base_price": 7.79,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "secret_recipe_fries",
+      "name": "Secret Recipe Fries",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mashed_potatoes_gravy",
+      "name": "Mashed Potatoes & Gravy",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "coleslaw",
+      "name": "Coleslaw",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "sweet_kernel_corn",
+      "name": "Sweet Kernel Corn",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mac_cheese",
+      "name": "Mac & Cheese",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "green_beans",
+      "name": "Green Beans",
+      "category": "Sides",
+      "description": "",
+      "base_price": 3.29,
+      "sizes": [
+        "individual",
+        "large",
+        "family"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "biscuit",
+      "name": "Biscuit",
+      "category": "Sides",
+      "description": "",
+      "base_price": 1.29,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_sauce",
+      "name": "KFC Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "honey_bbq_sauce",
+      "name": "Honey BBQ Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "classic_ranch_sauce",
+      "name": "Classic Ranch Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "honey_mustard_sauce",
+      "name": "Honey Mustard Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "creamy_buffalo_sauce",
+      "name": "Creamy Buffalo Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "sweet_n_tangy_sauce",
+      "name": "Sweet N Tangy Sauce",
+      "category": "Sauces",
+      "description": "",
+      "base_price": 0.0,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "chocolate_chip_cookie",
+      "name": "Chocolate Chip Cookie",
+      "category": "Desserts",
+      "description": "",
+      "base_price": 1.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "12_pc_chocolate_chip_cookie_share_pack",
+      "name": "12-Piece Chocolate Chip Cookie Share Pack",
+      "category": "Desserts",
+      "description": "",
+      "base_price": 6.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "pepsi",
+      "name": "Pepsi",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "diet_pepsi",
+      "name": "Diet Pepsi",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mountain_dew",
+      "name": "Mountain Dew",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "starry",
+      "name": "Starry",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "dr_pepper",
+      "name": "Dr. Pepper",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "lipton_brisk_sweet_tea",
+      "name": "Lipton Brisk Sweet Tea",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "unsweetened_tea",
+      "name": "Unsweetened Tea",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "pink_lemonade",
+      "name": "Pink Lemonade",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [
+        "medium",
+        "large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "orange_juice",
+      "name": "Orange Juice",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "milk",
+      "name": "Milk",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "bottled_water",
+      "name": "Bottled Water",
+      "category": "Drinks",
+      "description": "",
+      "base_price": 2.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    }
+  ],
+  "combos": [
+    {
+      "id": "kfc_mac_cheese_bowl_combo",
+      "name": "KFC Mac & Cheese Bowl Combo",
+      "description": "KFC Mac & Cheese Bowl, Secret Recipe Fries & a Medium Drink.",
+      "base_price": 9.99,
+      "includes": [
+        "KFC Mac & Cheese Bowl",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "limited_time"
+    },
+    {
+      "id": "kfc_mac_cheese_bowl_spicy_combo",
+      "name": "KFC Mac & Cheese Bowl (Spicy) Combo",
+      "description": "KFC Mac & Cheese Bowl (Spicy), Secret Recipe Fries & a Medium Drink.",
+      "base_price": 9.99,
+      "includes": [
+        "KFC Mac & Cheese Bowl (Spicy)",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "limited_time"
+    },
+    {
+      "id": "2_pc_fried_chicken_combo",
+      "name": "2 pc. Fried Chicken Combo",
+      "description": "2 pieces of fried chicken, a side of Secret Recipe Fries, a biscuit, and a medium drink.",
+      "base_price": 8.99,
+      "includes": [
+        "2 pc. Fried Chicken",
+        "Secret Recipe Fries",
+        "Biscuit",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "3_pc_fried_chicken_combo",
+      "name": "3 pc. Fried Chicken Combo",
+      "description": "3 pieces of fried chicken, a side of Secret Recipe Fries, a biscuit, and a medium drink.",
+      "base_price": 9.99,
+      "includes": [
+        "3 pc. Fried Chicken",
+        "Secret Recipe Fries",
+        "Biscuit",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "popcorn_chicken_combo",
+      "name": "Popcorn Chicken Combo",
+      "description": "Popcorn Chicken, Secret Recipe Fries & a Medium Drink.",
+      "base_price": 9.99,
+      "includes": [
+        "Popcorn Chicken",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_crispy_strips_combo_3_pc",
+      "name": "KFC Crispy Strips Combo (3 pc.)",
+      "description": "3 Crispy Strips, Secret Recipe Fries, a biscuit & a medium drink.",
+      "base_price": 9.99,
+      "includes": [
+        "3 pc. Crispy Strips",
+        "Secret Recipe Fries",
+        "Biscuit",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_crispy_strips_combo_5_pc",
+      "name": "KFC Crispy Strips Combo (5 pc.)",
+      "description": "5 Crispy Strips, Secret Recipe Fries, a biscuit & a medium drink.",
+      "base_price": 12.99,
+      "includes": [
+        "5 pc. Crispy Strips",
+        "Secret Recipe Fries",
+        "Biscuit",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_classic_chicken_sandwich_combo",
+      "name": "KFC Classic Chicken Sandwich Combo",
+      "description": "KFC Chicken Sandwich (Classic or Spicy), a side of Secret Recipe Fries, and a medium drink.",
+      "base_price": 9.99,
+      "includes": [
+        "KFC Classic Chicken Sandwich",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "famous_bowl_combo",
+      "name": "Famous Bowl Combo",
+      "description": "Famous Bowl, Secret Recipe Fries & a Medium Drink.",
+      "base_price": 9.99,
+      "includes": [
+        "Famous Bowl",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "chicken_pot_pie_combo",
+      "name": "Chicken Pot Pie Combo",
+      "description": "Chicken Pot Pie, Secret Recipe Fries & a Medium Drink.",
+      "base_price": 9.99,
+      "includes": [
+        "Chicken Pot Pie",
+        "Secret Recipe Fries",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "large_secret_recipe_fries",
+          "family_secret_recipe_fries"
+        ],
+        "drinks": [
+          "large_drink"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "12_pc_fried_chicken_3_large_sides_meal",
+      "name": "12 pc. Fried Chicken & 3 Large Sides Meal",
+      "description": "12 pieces of fried chicken, 3 large sides (choice), and 6 biscuits.",
+      "base_price": 39.99,
+      "includes": [
+        "12 pc. Fried Chicken",
+        "3 Large Sides (choice)",
+        "6 Biscuits"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "family_sized_side_upgrade"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "8_pc_fried_chicken_2_large_sides_meal",
+      "name": "8 pc. Fried Chicken & 2 Large Sides Meal",
+      "description": "8 pieces of fried chicken, 2 large sides (choice), and 4 biscuits.",
+      "base_price": 29.99,
+      "includes": [
+        "8 pc. Fried Chicken",
+        "2 Large Sides (choice)",
+        "4 Biscuits"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "family_sized_side_upgrade"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "16_pc_fried_chicken_4_large_sides_meal",
+      "name": "16 pc. Fried Chicken & 4 Large Sides Meal",
+      "description": "16 pieces of fried chicken, 4 large sides (choice), and 8 biscuits.",
+      "base_price": 49.99,
+      "includes": [
+        "16 pc. Fried Chicken",
+        "4 Large Sides (choice)",
+        "8 Biscuits"
+      ],
+      "upgrade_options": {
+        "sides": [
+          "family_sized_side_upgrade"
+        ]
+      },
+      "availability": "all_day"
+    }
+  ],
+  "modifiers": {
+    "milk_swap": [],
+    "sauces": [
+      "KFC Sauce",
+      "Honey BBQ Sauce",
+      "Classic Ranch Sauce",
+      "Honey Mustard Sauce",
+      "Creamy Buffalo Sauce",
+      "Sweet N Tangy Sauce"
+    ],
+    "toppings": [],
+    "ice_level": [],
+    "protein_swap": [],
+    "bread_swap": [],
+    "extra": {
+      "side_choices": [
+        "Secret Recipe Fries",
+        "Mashed Potatoes & Gravy",
+        "Coleslaw",
+        "Sweet Kernel Corn",
+        "Mac & Cheese",
+        "Green Beans",
+        "Biscuit"
+      ],
+      "drink_choices": [
+        "Pepsi",
+        "Diet Pepsi",
+        "Mountain Dew",
+        "Starry",
+        "Dr. Pepper",
+        "Lipton Brisk Sweet Tea",
+        "Unsweetened Tea",
+        "Pink Lemonade",
+        "Orange Juice",
+        "Milk",
+        "Bottled Water"
+      ]
+    }
+  },
+  "upsell_rules": [
+    {
+      "trigger": "order_combo_eligible_item",
+      "suggestion": "Make it a combo meal with a side and drink!"
+    },
+    {
+      "trigger": "order_main_item_without_combo",
+      "suggestion": "Add a side to your order."
+    },
+    {
+      "trigger": "order_main_item_without_combo",
+      "suggestion": "Don't forget a refreshing drink!"
+    },
+    {
+      "trigger": "order_any_meal",
+      "suggestion": "Treat yourself to a Chocolate Chip Cookie."
+    },
+    {
+      "trigger": "combo_includes_individual_side",
+      "suggestion": "Upgrade your side to a large or family size."
+    },
+    {
+      "trigger": "combo_includes_medium_drink",
+      "suggestion": "Upgrade your drink to a large size."
+    },
+    {
+      "trigger": "multiple_items_added",
+      "suggestion": "Consider a Family Deal for better value!"
+    },
+    {
+      "trigger": "order_chicken_sandwich",
+      "suggestion": "Try the Spicy KFC Classic Chicken Sandwich!"
+    }
+  ],
+  "time_based_rules": []
+}

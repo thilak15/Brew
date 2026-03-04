@@ -219,8 +219,8 @@ def get_order_summary() -> str:
 root_agent = Agent(
     name="brew_agent",
     model=os.getenv("BREW_AGENT_MODEL", "gemini-2.5-flash-native-audio-preview-12-2025"),
-    description="Drive-thru barista that takes beverage orders with modifiers.",
-    instruction=get_system_prompt(),
+    description="Drive-thru AI that takes orders for any restaurant.",
+    instruction=get_system_prompt,  # callable: evaluated fresh per-session, picks up active restaurant
     tools=[
         add_item,
         remove_item,
