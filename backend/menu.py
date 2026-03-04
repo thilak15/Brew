@@ -21,7 +21,12 @@ logger = logging.getLogger(__name__)
 _RESTAURANT_ID_ENV = os.getenv("RESTAURANT_ID", "")
 
 _BACKEND_DIR = Path(__file__).resolve().parent
-_PIPELINE_OUTPUT = _BACKEND_DIR.parent / "pipeline" / "output"
+
+# In Docker: pipeline is mounted at /pipeline
+# Locally: pipeline is a sibling of backend/
+_DOCKER_PIPELINE_OUTPUT = Path("/pipeline/output")
+_LOCAL_PIPELINE_OUTPUT = _BACKEND_DIR.parent / "pipeline" / "output"
+_PIPELINE_OUTPUT = _DOCKER_PIPELINE_OUTPUT if _DOCKER_PIPELINE_OUTPUT.exists() else _LOCAL_PIPELINE_OUTPUT
 _ACTIVE_FILE = _PIPELINE_OUTPUT / "active_restaurant.json"
 
 

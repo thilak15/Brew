@@ -16,6 +16,9 @@ services:
       - ./debug_logs:/app/debug_logs
       # Mount local GCP credentials for Firestore access during local development
       - ~/.config/gcloud:/root/.config/gcloud:ro
+      # Mount pipeline directory so backend can import agent1/agent2 and write output
+      - ./pipeline:/pipeline
+      - ./pipeline/output:/pipeline/output
 
   frontend:
     build:

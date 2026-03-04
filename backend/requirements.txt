@@ -4,3 +4,7 @@ google-adk>=1.10.0
 python-dotenv>=1.0.0
 websockets>=14.0
 google-cloud-firestore>=2.19.0
+# Pipeline dependencies (agent1, agent2, image_generator)
+google-genai>=1.0.0
+Pillow>=10.0.0
+requests>=2.31.0

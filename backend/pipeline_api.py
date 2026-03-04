@@ -26,15 +26,24 @@ from fastapi.responses import StreamingResponse
 
 logger = logging.getLogger(__name__)
 
-# Path resolution — pipeline/ is a sibling of backend/
+# Path resolution:
+# - In Docker: pipeline/ is mounted at /pipeline
+# - Locally: pipeline/ is a sibling of backend/
 _BACKEND_DIR = Path(__file__).resolve().parent
 _PROJECT_ROOT = _BACKEND_DIR.parent
-_PIPELINE_DIR = _PROJECT_ROOT / "pipeline"
+
+_DOCKER_PIPELINE = Path("/pipeline")
+_LOCAL_PIPELINE = _PROJECT_ROOT / "pipeline"
+_PIPELINE_DIR = _DOCKER_PIPELINE if _DOCKER_PIPELINE.exists() else _LOCAL_PIPELINE
+
 _OUTPUT_DIR = _PIPELINE_DIR / "output"
 _ACTIVE_FILE = _OUTPUT_DIR / "active_restaurant.json"
 
-# Ensure pipeline is importable
-sys.path.insert(0, str(_PIPELINE_DIR))
+# Add pipeline to Python path so we can import agent1/agent2
+if str(_PIPELINE_DIR) not in sys.path:
+    sys.path.insert(0, str(_PIPELINE_DIR))
+
+logger.info("Pipeline directory resolved to: %s", _PIPELINE_DIR)
 
 router = APIRouter(prefix="/api/pipeline", tags=["pipeline"])
 
