@@ -23,6 +23,17 @@ class MenuModifiers(BaseModel):
         description="Any store-specific modifier types not covered above"
     )
 
+    @field_validator("milk_swap", "sauces", "toppings", "ice_level", "protein_swap", "bread_swap", mode="before")
+    @classmethod
+    def normalize_lists(cls, v: Any) -> list[str]:
+        if isinstance(v, list):
+            return [str(x) for x in v]
+        if isinstance(v, bool):
+            return ["available"] if v else []
+        if v in (None, {}, "", []):
+            return []
+        return [str(v)]
+
     @field_validator("extra", mode="before")
     @classmethod
     def normalize_extra(cls, v: Any) -> dict[str, list[str]]:
@@ -48,7 +59,38 @@ class SwapOptions(BaseModel):
     bread: list[str] = Field(default_factory=list)
     sauce: list[str] = Field(default_factory=list)
     milk: list[str] = Field(default_factory=list)
-    other: dict[str, list[str]] = Field(default_factory=dict)
+    other: dict[str, Any] = Field(default_factory=dict)
+
+    @field_validator("protein", "bread", "sauce", "milk", mode="before")
+    @classmethod
+    def normalize_lists(cls, v: Any) -> list[str]:
+        if isinstance(v, list):
+            return [str(x) for x in v]
+        if isinstance(v, bool):
+            return ["available"] if v else []
+        if v in (None, {}, "", []):
+            return []
+        return [str(v)]
+
+    @field_validator("other", mode="before")
+    @classmethod
+    def normalize_other(cls, v: Any) -> dict[str, list[str]]:
+        if not isinstance(v, dict):
+            return {}
+        result = {}
+        for key, val in v.items():
+            if isinstance(val, list):
+                result[key] = [str(x) for x in val]
+            elif isinstance(val, bool):
+                result[key] = ["available"] if val else []
+            elif val in (None, {}, ""):
+                result[key] = []
+            else:
+                try:
+                    result[key] = [f"+${float(val):.2f}"]
+                except (TypeError, ValueError):
+                    result[key] = [str(val)]
+        return result
 
 
 class MenuItem(BaseModel):
