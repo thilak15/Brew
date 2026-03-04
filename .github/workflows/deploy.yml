@@ -1,0 +1,107 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches: [main]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  REPO: brew-repo
+  BACKEND_SERVICE: brew-backend
+  FRONTEND_SERVICE: brew-frontend
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write   # Required for Workload Identity Federation
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # ── Authenticate with GCP (keyless via Workload Identity Federation) ──
+      - name: Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      # ── Set up gcloud CLI ──
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      # ── Configure Docker for Artifact Registry ──
+      - name: Configure Docker
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev --quiet
+
+      # ── Build & Push Backend ──
+      - name: Build & push backend image
+        run: |
+          IMAGE=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.BACKEND_SERVICE }}:${{ github.sha }}
+          docker build -t $IMAGE ./backend
+          docker push $IMAGE
+          echo "BACKEND_IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      # ── Deploy Backend to Cloud Run ──
+      - name: Deploy backend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.BACKEND_SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.BACKEND_IMAGE }}
+          flags: |
+            --port=8000
+            --memory=512Mi
+            --timeout=300
+            --session-affinity
+            --allow-unauthenticated
+          env_vars: |
+            GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
+            GOOGLE_GENAI_USE_VERTEXAI=FALSE
+
+      # ── Get Backend URL ──
+      - name: Get backend URL
+        id: backend_url
+        run: |
+          URL=$(gcloud run services describe ${{ env.BACKEND_SERVICE }} --region ${{ env.REGION }} --format="value(status.url)")
+          WSS_URL="wss://${URL#https://}"
+          echo "url=$URL" >> $GITHUB_OUTPUT
+          echo "wss_url=$WSS_URL" >> $GITHUB_OUTPUT
+          echo "✅ Backend deployed: $URL"
+
+      # ── Build & Push Frontend (with backend URL baked in) ──
+      - name: Build & push frontend image
+        run: |
+          IMAGE=${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO }}/${{ env.FRONTEND_SERVICE }}:${{ github.sha }}
+          docker build \
+            --build-arg NEXT_PUBLIC_WS_URL=${{ steps.backend_url.outputs.wss_url }} \
+            -t $IMAGE \
+            ./frontend
+          docker push $IMAGE
+          echo "FRONTEND_IMAGE=$IMAGE" >> $GITHUB_ENV
+
+      # ── Deploy Frontend to Cloud Run ──
+      - name: Deploy frontend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.FRONTEND_SERVICE }}
+          region: ${{ env.REGION }}
+          image: ${{ env.FRONTEND_IMAGE }}
+          flags: |
+            --port=3000
+            --memory=256Mi
+            --allow-unauthenticated
+
+      # ── Print Live URLs ──
+      - name: Print deployment URLs
+        run: |
+          FRONTEND_URL=$(gcloud run services describe ${{ env.FRONTEND_SERVICE }} --region ${{ env.REGION }} --format="value(status.url)")
+          echo ""
+          echo "☕ Brew is LIVE!"
+          echo "  Frontend: $FRONTEND_URL"
+          echo "  Backend:  ${{ steps.backend_url.outputs.url }}"
+          echo ""

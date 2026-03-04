@@ -147,31 +147,50 @@ npm run dev
 </details>
 
 <details>
-<summary><strong>☁️ Deploy to Google Cloud Run</strong></summary>
+<summary><strong>☁️ Deploy to Google Cloud Run (CI/CD)</strong></summary>
 
-One command deploys everything:
+Every push to `main` **auto-deploys** to Cloud Run via GitHub Actions.
 
+### One-Time Setup (~5 min)
+
+**1. Install gcloud CLI** (if you don't have it):
+```bash
+brew install --cask google-cloud-sdk
+```
+
+**2. Authenticate:**
+```bash
+gcloud auth login
+```
+
+**3. Run the setup script** (creates service account, Workload Identity Federation, Artifact Registry):
+```bash
+./setup-gcp.sh --project YOUR_PROJECT_ID --repo thilak15/Brew
+```
+
+**4. Add GitHub Secrets** — the script prints 4 values to add at [github.com/thilak15/Brew/settings/secrets/actions](https://github.com/thilak15/Brew/settings/secrets/actions):
+
+| Secret | Value |
+|--------|-------|
+| `GCP_PROJECT_ID` | Your GCP project ID |
+| `WIF_PROVIDER` | Printed by setup script |
+| `WIF_SERVICE_ACCOUNT` | Printed by setup script |
+| `GOOGLE_API_KEY` | Your Google AI Studio API key |
+
+### That's it!
+
+Now every push to `main` will:
+1. Build backend + frontend Docker images
+2. Push to Artifact Registry
+3. Deploy both to Cloud Run
+4. Auto-wire the backend WebSocket URL into the frontend
+
+### Manual deploy (without CI/CD):
 ```bash
 ./deploy.sh
 ```
 
-The script will:
-1. Check/install `gcloud` CLI
-2. Authenticate with GCP
-3. Enable required APIs
-4. Create Artifact Registry
-5. Build & push backend → deploy to Cloud Run
-6. Build & push frontend (with backend URL) → deploy to Cloud Run
-7. Print your live URLs
-
-You can also pass arguments directly:
-
-```bash
-./deploy.sh --project YOUR_PROJECT_ID --api-key YOUR_API_KEY --region us-central1
-```
-
-**To tear down:**
-
+### Tear down:
 ```bash
 gcloud run services delete brew-frontend --region us-central1 --quiet
 gcloud run services delete brew-backend --region us-central1 --quiet
