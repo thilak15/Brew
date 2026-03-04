@@ -237,11 +237,18 @@ async def websocket_endpoint(
             except Exception as e:
                 logger.warning("Downstream task: %s", e)
 
-        await asyncio.gather(
-            upstream_task(),
-            downstream_task(),
-            return_exceptions=True,
+        upstream = asyncio.create_task(upstream_task())
+        downstream = asyncio.create_task(downstream_task())
+
+        # Wait for either task to complete (or fail)
+        done, pending = await asyncio.wait(
+            [upstream, downstream],
+            return_when=asyncio.FIRST_COMPLETED,
         )
+
+        # Cancel any pending tasks to ensure clean shutdown of this session
+        for task in pending:
+            task.cancel()
     finally:
         if live_request_queue is not None:
             live_request_queue.close()

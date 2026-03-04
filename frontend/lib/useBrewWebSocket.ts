@@ -56,74 +56,99 @@ export function useBrewWebSocket({
 
   useEffect(() => {
     if (!connect || !WS_URL) return;
-    const url = `${WS_URL.replace(/\/$/, "")}/ws/${encodeURIComponent(user_id)}/${encodeURIComponent(session_id)}`;
-    dispatchRef.current({ type: "CONNECTION", status: "connecting" });
-    const ws = new WebSocket(url);
-    ws.binaryType = "arraybuffer";
-    wsRef.current = ws;
+    let ws: WebSocket | null = null;
+    let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+    let isMounted = true;
 
-    ws.onopen = () => {
-      dispatchRef.current({ type: "CONNECTION", status: "open" });
-      dispatchRef.current({ type: "MODE", mode: "listening" });
-    };
-    ws.onerror = () => {
-      dispatchRef.current({
-        type: "CONNECTION",
-        status: "error",
-        error: "WebSocket error",
-      });
-    };
-    ws.onclose = () => {
-      wsRef.current = null;
-      dispatchRef.current({ type: "CONNECTION", status: "idle" });
-      dispatchRef.current({ type: "MODE", mode: "idle" });
-    };
-    ws.onmessage = (event: MessageEvent) => {
-      const d = dispatchRef.current;
-      if (event.data instanceof ArrayBuffer) {
-        onAudioChunkRef.current?.(event.data);
-        return;
-      }
-      try {
-        const msg = JSON.parse(event.data as string);
-        if (msg.type === "order_state" && msg.payload) {
-          d({ type: "ORDER_STATE", payload: msg.payload });
+    function connectWs() {
+      if (!isMounted) return;
+      const url = `${WS_URL.replace(/\/$/, "")}/ws/${encodeURIComponent(user_id)}/${encodeURIComponent(session_id)}`;
+      dispatchRef.current({ type: "CONNECTION", status: "connecting" });
+      ws = new WebSocket(url);
+      ws.binaryType = "arraybuffer";
+      wsRef.current = ws;
+
+      ws.onopen = () => {
+        dispatchRef.current({ type: "CONNECTION", status: "open" });
+        dispatchRef.current({ type: "MODE", mode: "listening" });
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = null;
+        }
+      };
+      ws.onerror = () => {
+        // Will reconnect onclose
+        dispatchRef.current({
+          type: "CONNECTION",
+          status: "connecting", // show as connecting while we wait to retry
+        });
+      };
+      ws.onclose = () => {
+        wsRef.current = null;
+        if (isMounted) {
+          // Auto-reconnect after 1 second
+          dispatchRef.current({ type: "CONNECTION", status: "connecting" });
+          reconnectTimer = setTimeout(connectWs, 1000);
+        } else {
+          dispatchRef.current({ type: "CONNECTION", status: "idle" });
+          dispatchRef.current({ type: "MODE", mode: "idle" });
+        }
+      };
+      ws.onmessage = (event: MessageEvent) => {
+        const d = dispatchRef.current;
+        if (event.data instanceof ArrayBuffer) {
+          onAudioChunkRef.current?.(event.data);
           return;
         }
-        if (msg.type === "error") {
-          d({ type: "ERROR", message: msg.message || msg.code || "Error" });
-          return;
+        try {
+          const msg = JSON.parse(event.data as string);
+          if (msg.type === "order_state" && msg.payload) {
+            d({ type: "ORDER_STATE", payload: msg.payload });
+            return;
+          }
+          if (msg.type === "error") {
+            // we ignore API disconnect errors because onclose will handle reconnect
+            if (!msg.message?.includes("1011") && !msg.message?.includes("1008")) {
+              d({ type: "ERROR", message: msg.message || msg.code || "Error" });
+            }
+            return;
+          }
+          if (msg.interrupted) {
+            interruptAudioPlayback();
+          }
+          if (msg.turnComplete === true) {
+            d({ type: "MODE", mode: "listening" });
+          }
+          if (msg.inputTranscription != null) {
+            const text =
+              typeof msg.inputTranscription === "string"
+                ? msg.inputTranscription
+                : (msg.inputTranscription as { text?: string })?.text ?? String(msg.inputTranscription);
+            d({ type: "TRANSCRIPT", text });
+          }
+          if (msg.type === "ui_context_change" && msg.context) {
+            d({ type: "MENU_CONTEXT", context: msg.context });
+          }
+          if (msg.content?.parts) {
+            const hasAudio = msg.content.parts.some(
+              (p: { inlineData?: unknown }) => p.inlineData
+            );
+            if (hasAudio) d({ type: "MODE", mode: "speaking" });
+          }
+        } catch {
+          // ignore non-JSON
         }
-        if (msg.interrupted) {
-          interruptAudioPlayback();
-        }
-        if (msg.turnComplete === true) {
-          d({ type: "MODE", mode: "listening" });
-        }
-        if (msg.inputTranscription != null) {
-          const text =
-            typeof msg.inputTranscription === "string"
-              ? msg.inputTranscription
-              : (msg.inputTranscription as { text?: string })?.text ?? String(msg.inputTranscription);
-          d({ type: "TRANSCRIPT", text });
-        }
-        if (msg.type === "ui_context_change" && msg.context) {
-          d({ type: "MENU_CONTEXT", context: msg.context });
-        }
-        if (msg.content?.parts) {
-          const hasAudio = msg.content.parts.some(
-            (p: { inlineData?: unknown }) => p.inlineData
-          );
-          if (hasAudio) d({ type: "MODE", mode: "speaking" });
-        }
-      } catch {
-        // ignore non-JSON
-      }
-    };
+      };
+    }
+
+    connectWs();
+
     return () => {
-      disconnect();
+      isMounted = false;
+      if (reconnectTimer) clearTimeout(reconnectTimer);
+      if (ws) ws.close();
     };
-  }, [connect, user_id, session_id, disconnect]);
+  }, [connect, user_id, session_id]);
 
   const sendAudio = useCallback((chunk: ArrayBuffer) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
