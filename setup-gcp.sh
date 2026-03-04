@@ -96,6 +96,8 @@ else
     --display-name="GitHub Actions Deployer" \
     --quiet
   log "Created service account: $SA_EMAIL"
+  warn "Waiting 10s for IAM propagation..."
+  sleep 10
 fi
 
 # Grant roles
