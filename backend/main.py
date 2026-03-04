@@ -29,8 +29,14 @@ from agent import root_agent, set_current_session
 from order_state import (
     get_order_state,
     register_order_state,
+    restore_order_state,
     unregister_order_state,
 )
+try:
+    from firestore_session_service import FirestoreSessionService
+    _USE_FIRESTORE = True
+except ImportError:
+    _USE_FIRESTORE = False
 
 from pathlib import Path
 
@@ -77,7 +83,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-session_service = InMemorySessionService()
+if _USE_FIRESTORE:
+    session_service = FirestoreSessionService()
+    logger.info("Using FirestoreSessionService for cloud-native session persistence")
+else:
+    session_service = InMemorySessionService()
+    logger.info("Firestore unavailable, using InMemorySessionService")
+
 runner = Runner(
     app_name=APP_NAME,
     agent=root_agent,
@@ -93,6 +105,12 @@ async def websocket_endpoint(
 ) -> None:
     await websocket.accept()
     register_order_state(user_id, session_id)
+    # If Firestore is enabled and this is a reconnect from a different instance,
+    # restore the cart state from Firestore
+    if get_order_state(user_id, session_id) is not None:
+        existing = get_order_state(user_id, session_id)
+        if not existing._items:  # Empty cart — try to restore
+            await restore_order_state(user_id, session_id)
     live_request_queue: LiveRequestQueue | None = None
 
     try:
