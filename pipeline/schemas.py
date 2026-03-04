@@ -87,11 +87,30 @@ class ComboMeal(BaseModel):
     description: str = ""
     base_price: float
     includes: list[str] = Field(description="Item names included in the base combo")
-    upgrade_options: dict[str, list[str]] = Field(
+    upgrade_options: dict[str, Any] = Field(
         default_factory=dict,
         description="What can be upgraded e.g. {'size': ['Medium→Large (+$0.50)'], 'drink': ['any fountain drink']}"
     )
     availability: str = Field(default="all_day")
+
+    @field_validator("upgrade_options", mode="before")
+    @classmethod
+    def normalize_upgrade_options(cls, v: Any) -> dict[str, list[str]]:
+        """Normalize any non-list values in upgrade_options to string lists."""
+        if not isinstance(v, dict):
+            return {}
+        result = {}
+        for key, val in v.items():
+            if isinstance(val, list):
+                result[key] = [str(x) for x in val]
+            elif isinstance(val, bool):
+                result[key] = ["available"] if val else []
+            else:
+                try:
+                    result[key] = [f"+${float(val):.2f}"]
+                except (TypeError, ValueError):
+                    result[key] = [str(val)]
+        return result
 
 
 class UpsellRule(BaseModel):
