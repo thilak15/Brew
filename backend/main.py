@@ -19,6 +19,7 @@ import logging
 import os
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from google.adk.agents.run_config import RunConfig, StreamingMode
 from google.adk.agents.live_request_queue import LiveRequestQueue
 from google.adk.runners import Runner
@@ -73,6 +74,15 @@ logging.getLogger("google.genai").setLevel(logging.DEBUG)
 APP_NAME = "brew"
 
 app = FastAPI(title="Brew")
+
+# Mount pipeline output images as static files
+_PIPELINE_OUTPUT = Path(__file__).resolve().parent.parent / "pipeline" / "output"
+_PIPELINE_OUTPUT.mkdir(parents=True, exist_ok=True)
+app.mount("/pipeline-output", StaticFiles(directory=str(_PIPELINE_OUTPUT)), name="pipeline-output")
+
+# Register pipeline setup API router
+from pipeline_api import router as pipeline_router
+app.include_router(pipeline_router)
 
 # CORS: allow cross-origin for Cloud Run (frontend + backend on different domains)
 allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")

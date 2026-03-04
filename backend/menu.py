@@ -17,38 +17,61 @@ from pathlib import Path
 logger = logging.getLogger(__name__)
 
 # The RESTAURANT_ID env var controls which restaurant's files to load
-RESTAURANT_ID = os.getenv("RESTAURANT_ID", "")
+# Also checked: pipeline/output/active_restaurant.json (set by the setup UI)
+_RESTAURANT_ID_ENV = os.getenv("RESTAURANT_ID", "")
 
 _BACKEND_DIR = Path(__file__).resolve().parent
 _PIPELINE_OUTPUT = _BACKEND_DIR.parent / "pipeline" / "output"
+_ACTIVE_FILE = _PIPELINE_OUTPUT / "active_restaurant.json"
+
+
+def _get_active_restaurant_id() -> str:
+    """Return the active restaurant ID from file (UI-set) or env var."""
+    # File takes priority (set by setup UI, no restart needed)
+    if _ACTIVE_FILE.exists():
+        try:
+            data = json.loads(_ACTIVE_FILE.read_text())
+            rid = data.get("restaurant_id", "")
+            if rid:
+                return rid
+        except Exception:
+            pass
+    # Fall back to env var (CLI-set, needs restart)
+    return os.getenv("RESTAURANT_ID", _RESTAURANT_ID_ENV)
+
+
+# Module-level alias — re-evaluated on each menu load via _get_active_restaurant_id()
+RESTAURANT_ID = _get_active_restaurant_id()
 
 
 def _get_menu_path() -> Path:
     """Return the path to the active restaurant's menu.json."""
-    if RESTAURANT_ID:
-        pipeline_menu = _PIPELINE_OUTPUT / RESTAURANT_ID / "menu.json"
+    restaurant_id = _get_active_restaurant_id()
+    if restaurant_id:
+        pipeline_menu = _PIPELINE_OUTPUT / restaurant_id / "menu.json"
         if pipeline_menu.exists():
             logger.info("Loading menu from pipeline output: %s", pipeline_menu)
             return pipeline_menu
         else:
             logger.warning(
                 "RESTAURANT_ID=%s but no menu.json found at %s — falling back to Brew menu",
-                RESTAURANT_ID, pipeline_menu
+                restaurant_id, pipeline_menu
             )
     return _BACKEND_DIR / "menu.json"
 
 
 def _get_prompt_path() -> Path:
     """Return the path to the active restaurant's system_prompt.md."""
-    if RESTAURANT_ID:
-        pipeline_prompt = _PIPELINE_OUTPUT / RESTAURANT_ID / "system_prompt.md"
+    restaurant_id = _get_active_restaurant_id()
+    if restaurant_id:
+        pipeline_prompt = _PIPELINE_OUTPUT / restaurant_id / "system_prompt.md"
         if pipeline_prompt.exists():
             logger.info("Loading system prompt from pipeline output: %s", pipeline_prompt)
             return pipeline_prompt
         else:
             logger.warning(
                 "RESTAURANT_ID=%s but no system_prompt.md found — falling back to Brew prompt",
-                RESTAURANT_ID
+                restaurant_id
             )
     return _BACKEND_DIR / "system_prompt.md"
 
