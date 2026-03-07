@@ -76,17 +76,23 @@ def add_modifier(
     item_id: str,
     modifier_type: str,
     value: str,
-    quantity: int = 1,
+    quantity: str = "1",
 ) -> str:
-    """Add a modifier to an item. modifier_type: one of syrup, milk_swap, topping, ice_level. value: exact name from menu (e.g. 'Oat Milk', 'SF Vanilla', 'Matcha Cold Foam'). quantity: number of pumps/scoops (default 1)."""
-    logger.info(f"👉 TOOL CALL: add_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={quantity})")
+    """Add a modifier to an item. modifier_type: one of syrup, milk_swap, topping, ice_level. value: exact name from menu (e.g. 'Oat Milk', 'SF Vanilla', 'Matcha Cold Foam'). quantity: number of pumps/scoops (pass as a string, e.g. '1', '2')."""
+    
+    try:
+        qty_int = int(quantity)
+    except ValueError:
+        qty_int = 1
+        
+    logger.info(f"👉 TOOL CALL: add_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
     state = _state()
     if not state:
         return "No active order session."
     price_impact = get_modifier_price_impact(modifier_type)
-    if state.add_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=quantity):
-        logger.info(f"✅ TOOL SUCCESS: Added modifier {quantity}x {value} to {item_id}")
-        return f"{{'status': 'success', 'action': 'added_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {quantity}}}"
+    if state.add_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=qty_int):
+        logger.info(f"✅ TOOL SUCCESS: Added modifier {qty_int}x {value} to {item_id}")
+        return f"{{'status': 'success', 'action': 'added_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {qty_int}}}"
     logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
     return f"{{'status': 'error', 'message': 'Item {item_id} not found.'}}"
 
@@ -108,17 +114,23 @@ def set_modifier(
     item_id: str,
     modifier_type: str,
     value: str,
-    quantity: int = 1,
+    quantity: str = "1",
 ) -> str:
-    """Replace all modifiers of this type with one value. Use for 'instead of X I want Y' (e.g. set milk_swap to 'Whole Milk')."""
-    logger.info(f"👉 TOOL CALL: set_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={quantity})")
+    """Replace all modifiers of this type with one value. Use for 'instead of X I want Y' (e.g. set milk_swap to 'Whole Milk'). quantity: pass as string numeral (e.g. '1')."""
+    
+    try:
+        qty_int = int(quantity)
+    except ValueError:
+        qty_int = 1
+        
+    logger.info(f"👉 TOOL CALL: set_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
     state = _state()
     if not state:
         return "No active order session."
     price_impact = get_modifier_price_impact(modifier_type)
-    if state.set_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=quantity):
+    if state.set_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=qty_int):
         logger.info(f"✅ TOOL SUCCESS: Set modifier {modifier_type} to {value} for {item_id}")
-        return f"{{'status': 'success', 'action': 'set_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {quantity}}}"
+        return f"{{'status': 'success', 'action': 'set_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {qty_int}}}"
     logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
     return f"{{'status': 'error', 'message': 'Item {item_id} not found.'}}"
 
