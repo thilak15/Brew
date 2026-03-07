@@ -174,8 +174,9 @@ async def websocket_endpoint(
                             if msg.get("type") == "turn_complete":
                                 if bool(tool_gate["pending"]):
                                     logger.debug("Ignored turn_complete while tool call pending.")
-                                    continue
-                                live_request_queue.send_activity_end()
+                                # Native-audio models (09-2025, 12-2025) use automatic
+                                # activity detection and reject explicit send_activity_end().
+                                # Simply skip — the server-side VAD will detect silence itself.
                                 continue
                                 
                             if msg.get("type") == "text" and "text" in msg:
