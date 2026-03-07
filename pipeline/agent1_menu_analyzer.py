@@ -66,7 +66,7 @@ Schema:
       "id": "<snake_case_item_id>",
       "name": "<exact menu name>",
       "category": "<category this item belongs to>",
-      "description": "<brief description if visible>",
+      "description": "<detailed description of the item and its ingredients (generate a realistic one if not explicitly written)>",
       "base_price": <price as float>,
       "sizes": ["<size options if available>"],
       "add_ons": ["<things that can be added>"],
@@ -112,7 +112,8 @@ Schema:
 
 IMPORTANT EXTRACTION RULES:
 1. Extract EVERY SINGLE item visible on the menu — do not skip any.
-2. If an item has multiple sizes, list all sizes in the "sizes" array.
+2. For the "description" field of items and combos, you MUST write a highly detailed, appetizing description of the food itself. If the menu URL or image does not provide a description, use your knowledge of the restaurant menu to accurately list its ingredients and describe what it is. DO NOT leave descriptions blank or use the word 'None'.
+3. If an item has multiple sizes, list all sizes in the "sizes" array.
 3. For combos/meals, list every item included in the base combo.
 4. Identify ALL customization options: what can be added, removed, or swapped.
 5. If an item is "breakfast only" or "limited time", note it in availability.
