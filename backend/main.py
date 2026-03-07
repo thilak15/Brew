@@ -156,6 +156,11 @@ async def websocket_endpoint(
                     elif "text" in raw and raw["text"]:
                         try:
                             msg = json.loads(raw["text"])
+                            
+                            if msg.get("type") == "turn_complete":
+                                live_request_queue.send_activity_end()
+                                continue
+                                
                             if msg.get("type") == "text" and "text" in msg:
                                 content = types.Content(
                                     parts=[types.Part(text=msg["text"])]

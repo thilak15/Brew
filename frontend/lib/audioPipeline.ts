@@ -4,14 +4,23 @@
  * Capture microphone at 16 kHz mono, 16-bit PCM, and send chunks via callback.
  * Uses AudioWorklet (modern, off-main-thread) with a ScriptProcessor fallback.
  */
+import hark from 'hark';
+
 const TARGET_SAMPLE_RATE = 16000;
 
 export async function startMicCapture(
-  onChunk: (buffer: ArrayBuffer) => void
+  onChunk: (buffer: ArrayBuffer) => void,
+  onSpeechEnd?: () => void
 ): Promise<() => void> {
   const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const ctx = new AudioContext({ sampleRate: 48000 });
   const source = ctx.createMediaStreamSource(stream);
+
+  // Set up hark for VAD
+  const speechEvents = hark(stream, { interval: 100, threshold: -50, play: false });
+  speechEvents.on('stopped_speaking', () => {
+    onSpeechEnd?.();
+  });
 
   // Try AudioWorklet first, fall back to ScriptProcessor
   if (ctx.audioWorklet) {
@@ -25,6 +34,7 @@ export async function startMicCapture(
       workletNode.connect(ctx.destination);
 
       return () => {
+        speechEvents.stop();
         workletNode.port.close();
         workletNode.disconnect();
         source.disconnect();
@@ -70,6 +80,7 @@ export async function startMicCapture(
   scriptNode.connect(ctx.destination);
 
   return () => {
+    speechEvents.stop();
     scriptNode.disconnect();
     source.disconnect();
     stream.getTracks().forEach((t) => t.stop());

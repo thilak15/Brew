@@ -31,7 +31,7 @@ export default function Home() {
   const [autoStarted, setAutoStarted] = useState(false);
   const stopMicRef = useRef<(() => void) | null>(null);
 
-  const { sendAudio, sendText } = useBrewWebSocket({
+  const { sendAudio, sendText, sendTurnComplete } = useBrewWebSocket({
     session_id: sessionId,
     dispatch,
     connect,
@@ -50,7 +50,10 @@ export default function Home() {
     prepareAudioPlayback();
     // Small delay to ensure the backend's Gemini live session is ready
     setTimeout(() => sendText(WELCOME_TRIGGER), 500);
-    startMicCapture((chunk) => sendAudio(chunk)).then((stop) => {
+    startMicCapture(
+      (chunk) => sendAudio(chunk),
+      () => sendTurnComplete()
+    ).then((stop) => {
       stopMicRef.current = stop;
       setMicActive(true);
     });

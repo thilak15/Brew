@@ -39,6 +39,7 @@ export function useBrewWebSocket({
 }: UseBrewWebSocketOptions): {
   sendAudio: (chunk: ArrayBuffer) => void;
   sendText: (text: string) => void;
+  sendTurnComplete: () => void;
   disconnect: () => void;
 } {
   const wsRef = useRef<WebSocket | null>(null);
@@ -137,5 +138,11 @@ export function useBrewWebSocket({
     }
   }, []);
 
-  return { sendAudio, sendText, disconnect };
+  const sendTurnComplete = useCallback(() => {
+    if (wsRef.current?.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify({ type: "turn_complete" }));
+    }
+  }, []);
+
+  return { sendAudio, sendText, sendTurnComplete, disconnect };
 }
