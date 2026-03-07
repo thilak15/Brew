@@ -22,7 +22,7 @@ This happens inside ADK `run_live()` while using Gemini Live API over WebSocket.
 From your codebase:
 
 - `backend/agent.py` defaults to:
-  - `gemini-2.5-flash-native-audio-preview-12-2025`
+  - `gemini-2.5-flash-native-audio-preview-09-2025`
 - `backend/.env.example` and `README.md` configure:
   - `GOOGLE_GENAI_USE_VERTEXAI=FALSE` (AI Studio API key path, not Vertex)
 - `backend/main.py` uses:

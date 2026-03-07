@@ -230,7 +230,7 @@ def get_order_summary() -> str:
 
 root_agent = Agent(
     name="brew_agent",
-    model=os.getenv("BREW_AGENT_MODEL", "gemini-2.5-flash-native-audio-preview-12-2025"),
+    model=os.environ["BREW_AGENT_MODEL"],  # Set in backend/.env — single source of truth
     description="Drive-thru barista that takes beverage orders with modifiers.",
     instruction=get_system_prompt(),
     tools=[

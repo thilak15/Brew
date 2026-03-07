@@ -209,22 +209,26 @@ Brew/
 │   ├── menu.py              # Menu loader + system prompt builder
 │   ├── menu.json            # Full menu: drinks, breakfast, desserts, modifiers
 │   ├── system_prompt.md     # AI barista personality & behavior rules
-│   ├── requirements.txt     # Python dependencies
+│   ├── requirements.txt    # Python dependencies
 │   ├── Dockerfile           # Backend container
-│   └── .env.example         # Environment variable template
+│   └── .env.example        # Environment variable template
 ├── frontend/
 │   ├── app/page.tsx         # Main page with session management
 │   ├── components/
 │   │   └── SmartMenu.tsx    # Dynamic tabbed menu with item cards
 │   ├── lib/
 │   │   ├── useBrewWebSocket.ts   # WebSocket hook for real-time communication
-│   │   ├── audioPipeline.ts      # AudioWorklet-based capture + playback
-│   │   └── orderReducer.ts       # State management for orders
+│   │   ├── audioPipeline.ts     # AudioWorklet-based capture + playback
+│   │   └── orderReducer.ts      # State management for orders
 │   ├── public/
-│   │   ├── audio-processor.js    # AudioWorklet processor
-│   │   └── images/menu/          # AI-generated menu item images
+│   │   ├── audio-processor.js   # AudioWorklet processor
+│   │   └── images/menu/         # AI-generated menu item images
 │   └── Dockerfile           # Frontend container
-├── docker-compose.yml       # One-command orchestration
+├── docs/
+│   ├── architecture.png    # Architecture diagram
+│   ├── apierror-1008-troubleshooting.md   # Live API 1008 fix guide
+│   └── IMPROVEMENTS.md      # Suggested improvements (code, architecture, prompts)
+├── docker-compose.yml      # One-command orchestration
 └── README.md
 ```
 
@@ -247,7 +251,7 @@ Brew/
 |----------|----------|-------------|
 | `GOOGLE_API_KEY` | ✅ | API key from [Google AI Studio](https://aistudio.google.com/apikey) |
 | `GOOGLE_GENAI_USE_VERTEXAI` | ✅ | Set to `FALSE` (uses AI Studio, not Vertex) |
-| `BREW_AGENT_MODEL` | ❌ | Override AI model (default: `gemini-2.5-flash-native-audio-preview-12-2025`) |
+| `BREW_AGENT_MODEL` | ❌ | Override AI model (default: `gemini-2.5-flash-native-audio-preview-09-2025`) |
 
 
 ## 📝 License
