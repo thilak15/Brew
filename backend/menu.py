@@ -12,9 +12,16 @@ from __future__ import annotations
 import json
 import logging
 import os
+import contextvars
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
+
+# Per-session restaurant override — set by main.py WebSocket handler.
+# Takes priority over active_restaurant.json and RESTAURANT_ID env var.
+_current_restaurant: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "current_restaurant", default=None
+)
 
 # The RESTAURANT_ID env var controls which restaurant's files to load
 # Also checked: pipeline/output/active_restaurant.json (set by the setup UI)
@@ -31,8 +38,12 @@ _ACTIVE_FILE = _PIPELINE_OUTPUT / "active_restaurant.json"
 
 
 def _get_active_restaurant_id() -> str:
-    """Return the active restaurant ID from file (UI-set) or env var."""
-    # File takes priority (set by setup UI, no restart needed)
+    """Return the active restaurant ID — contextvar (per-session) → file (UI) → env var."""
+    # 1. Per-session contextvar set by WebSocket handler (supports simultaneous restaurants)
+    ctx_id = _current_restaurant.get()
+    if ctx_id:
+        return ctx_id
+    # 2. File written by setup UI (no restart needed)
     if _ACTIVE_FILE.exists():
         try:
             data = json.loads(_ACTIVE_FILE.read_text())
@@ -41,7 +52,7 @@ def _get_active_restaurant_id() -> str:
                 return rid
         except Exception:
             pass
-    # Fall back to env var (CLI-set, needs restart)
+    # 3. Env var (CLI-set)
     return os.getenv("RESTAURANT_ID", _RESTAURANT_ID_ENV)
 
 
@@ -88,7 +99,7 @@ def _load_raw_menu() -> dict:
         return json.load(f)
 
 
-def get_system_prompt() -> str:
+def get_system_prompt(*args, **kwargs) -> str:
     """
     Load and return the active system prompt with menu text injected.
 

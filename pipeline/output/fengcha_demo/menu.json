@@ -1,0 +1,1800 @@
+{
+  "restaurant": {
+    "restaurant_id": "fengcha_demo",
+    "name": "Fengcha",
+    "type": "other",
+    "currency": "USD",
+    "drive_through": false,
+    "notes": "Customizable sweetness and ice levels are available for most drinks. Alternative milk options are available for milk-based beverages."
+  },
+  "categories": [
+    "Fresh Milk Tea",
+    "Fruit Tea",
+    "Macchiato Tea",
+    "Matcha",
+    "Coffee",
+    "Signature Drink",
+    "Smoothie",
+    "Dessert",
+    "Signature Dessert"
+  ],
+  "items": [
+    {
+      "id": "original_milk_tea",
+      "name": "Original Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A classic and comforting beverage featuring a robust black tea base expertly blended with rich, creamy milk, offering a smooth, subtly sweet, and timeless taste. Perfect for a soothing refreshment.",
+      "base_price": 4.99,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "panda_milk_tea",
+      "name": "Panda Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A delightful variation of our classic milk tea, featuring a harmonious blend of black tea and creamy milk, generously enhanced with both soft black boba pearls and translucent crystal boba for a delightful textural contrast in every sip.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "taro_milk_tea",
+      "name": "Taro Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A vibrant and subtly sweet milk tea infused with the distinct, nutty, and vanilla-like flavor of taro root, creating a creamy, exotic, and satisfying beverage with a beautiful purple hue. A popular choice for its unique taste.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "golden_boba_milk_tea",
+      "name": "Golden Boba Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "Our signature original milk tea elevated with a generous serving of perfectly chewy, honey-infused golden boba pearls, offering a rich and satisfying sweetness with every textural chew.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "brown_sugar_milk_tea",
+      "name": "Brown Sugar Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A rich and indulgent black tea latte infused with deep, caramelized brown sugar syrup, swirled into creamy fresh milk for a visually stunning and decadently sweet treat. A Fengcha classic.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "brown_sugar_pearl_milk",
+      "name": "Brown Sugar Pearl Milk",
+      "category": "Fresh Milk Tea",
+      "description": "A decadent, tea-free beverage featuring fresh, creamy milk generously swirled with rich, caramelized brown sugar syrup, and filled with an abundance of perfectly chewy brown sugar pearls. A pure, sweet, and comforting delight.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "thai_milk_tea",
+      "name": "Thai Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "An authentic Thai-style black tea, brewed strong and fragrant with exotic spices, then perfectly sweetened with condensed milk and poured over ice for a creamy, refreshing, and uniquely flavored experience.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "hokkaido_milk_tea",
+      "name": "Hokkaido Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "Inspired by the rich dairy of Hokkaido, Japan, this milk tea features a distinct caramelized brown sugar flavor infused into a creamy milk and robust black tea base, offering a sweet, buttery, and incredibly smooth taste.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "okinawa_milk_tea",
+      "name": "Okinawa Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A unique milk tea blending a roasted brown sugar flavor, similar to Japanese Kokuto sugar, with creamy milk and a strong black tea base. It offers a deeper, more earthy sweetness compared to regular brown sugar.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "ginger_milk_tea",
+      "name": "Ginger Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A comforting and warming milk tea infused with the invigorating spice of fresh ginger, blended perfectly with creamy milk and a black tea base for a soothing and flavorful experience.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mango_milk_tea",
+      "name": "Mango Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A delightful fusion of tropical sweetness, combining ripe, juicy mango essence with a creamy milk and robust tea base for a refreshing and fruity take on classic milk tea.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_milk_tea",
+      "name": "Strawberry Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "A sweet and creamy concoction featuring the fresh, juicy flavor of ripe strawberries blended perfectly with a smooth milk and aromatic tea base, creating a wonderfully fruity and comforting drink.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "lychee_milk_tea",
+      "name": "Lychee Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "An exotic and fragrant milk tea, infusing the delicate, floral sweetness of lychee fruit with a creamy milk and black tea base, offering a refreshingly unique and tropical flavor profile.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "matcha_milk_tea",
+      "name": "Matcha Milk Tea",
+      "category": "Fresh Milk Tea",
+      "description": "Earthy and vibrant ceremonial grade matcha green tea powder blended with creamy milk and a hint of sweetness, offering a balanced and refreshing twist on classic milk tea.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "passion_fruit_tea",
+      "name": "Passion Fruit Tea",
+      "category": "Fruit Tea",
+      "description": "A tropical and tangy black tea infused with the vibrant, sweet-tart essence of passion fruit, often garnished with fresh fruit bits for a truly refreshing and invigorating experience.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mango_fruit_tea",
+      "name": "Mango Fruit Tea",
+      "category": "Fruit Tea",
+      "description": "A delightful blend of sweet, ripe mango flavor harmoniously mixed with a refreshing and light tea base, creating a perfectly balanced and thirst-quenching tropical beverage.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "peach_fruit_tea",
+      "name": "Peach Fruit Tea",
+      "category": "Fruit Tea",
+      "description": "A sweet and fragrant tea infused with the juicy, delicate flavor of ripe peaches, creating a wonderfully refreshing and aromatic drink perfect for any time of day.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "lychee_fruit_tea",
+      "name": "Lychee Fruit Tea",
+      "category": "Fruit Tea",
+      "description": "An exotic and light tea showcasing the delicate, floral sweetness of lychee fruit. This refreshing beverage offers a subtly sweet and fragrant escape.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_fruit_tea",
+      "name": "Strawberry Fruit Tea",
+      "category": "Fruit Tea",
+      "description": "A delightfully sweet and tangy tea infused with the fresh, juicy essence of ripe strawberries, creating a vibrant, fruity, and incredibly refreshing drink.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "grapefruit_green_tea",
+      "name": "Grapefruit Green Tea",
+      "category": "Fruit Tea",
+      "description": "A zesty and invigorating green tea combined with the refreshing, slightly bitter notes of fresh grapefruit, offering a crisp, bright, and wonderfully balanced flavor.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kumquat_lemon_tea",
+      "name": "Kumquat Lemon Tea",
+      "category": "Fruit Tea",
+      "description": "A wonderfully tart and refreshing tea, blending the unique citrusy notes of kumquat with the bright tang of lemon, creating an uplifting and zesty beverage.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "honey_green_tea",
+      "name": "Honey Green Tea",
+      "category": "Fruit Tea",
+      "description": "A delicate and aromatic green tea gently sweetened with natural honey, offering a soothing, subtly sweet, and floral experience.",
+      "base_price": 4.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "honey_black_tea",
+      "name": "Honey Black Tea",
+      "category": "Fruit Tea",
+      "description": "A robust and full-bodied black tea delicately balanced with the natural sweetness of honey, creating a comforting and classic flavor profile.",
+      "base_price": 4.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "black_tea_macchiato",
+      "name": "Black Tea Macchiato",
+      "category": "Macchiato Tea",
+      "description": "A robust and fragrant black tea topped with a generous, cloud-like layer of creamy, slightly savory cheese foam, creating a delightful contrast of textures and flavors in every sip.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "green_tea_macchiato",
+      "name": "Green Tea Macchiato",
+      "category": "Macchiato Tea",
+      "description": "A refreshing and aromatic green tea crowned with a thick, velvety layer of creamy, subtly savory cheese foam, offering a unique blend of earthy tea notes and rich, indulgent topping.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "oolong_tea_macchiato",
+      "name": "Oolong Tea Macchiato",
+      "category": "Macchiato Tea",
+      "description": "A smooth and floral oolong tea perfectly complemented by a rich, luxurious layer of creamy, slightly salty cheese foam, creating an elegant balance of flavors and textures.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "matcha_macchiato",
+      "name": "Matcha Macchiato",
+      "category": "Macchiato Tea",
+      "description": "Earthy and vibrant ceremonial grade matcha green tea crowned with a thick, decadent layer of creamy, slightly savory cheese foam, offering a sophisticated blend of bitterness and richness.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_macchiato",
+      "name": "Strawberry Macchiato",
+      "category": "Macchiato Tea",
+      "description": "A delightful blend of sweet, fresh strawberry flavor infused into a light tea base, then generously topped with a velvety layer of creamy cheese foam for a fruity and indulgent treat.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "cocoa_macchiato",
+      "name": "Cocoa Macchiato",
+      "category": "Macchiato Tea",
+      "description": "A rich and comforting cocoa-infused beverage, perfectly balanced with a luxurious layer of creamy, slightly savory cheese foam, offering a decadent and satisfying chocolate experience.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "matcha_latte",
+      "name": "Matcha Latte",
+      "category": "Matcha",
+      "description": "A serene and creamy beverage made with premium ceremonial grade matcha green tea powder, whisked into a smooth, steamed milk base, offering an earthy, slightly sweet, and vibrant flavor profile.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "matcha_red_bean_milk",
+      "name": "Matcha Red Bean Milk",
+      "category": "Matcha",
+      "description": "A unique and delightful combination of earthy matcha green tea blended with fresh, creamy milk and the subtle sweetness and tender texture of cooked red beans, creating a satisfying and comforting drink.",
+      "base_price": 6.29,
+      "sizes": [],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "original_coffee",
+      "name": "Original Coffee",
+      "category": "Coffee",
+      "description": "A classic and robust brew, offering a rich, aromatic, and invigorating experience with a clean finish, perfect for a daily caffeine boost or a refreshing pick-me-up.",
+      "base_price": 4.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "hazelnut_coffee",
+      "name": "Hazelnut Coffee",
+      "category": "Coffee",
+      "description": "A delightful coffee creation infused with the warm, nutty essence of hazelnut, perfectly blended for a fragrant and comforting beverage that's both sweet and robust.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "caramel_coffee",
+      "name": "Caramel Coffee",
+      "category": "Coffee",
+      "description": "Smooth, rich coffee enhanced with swirls of sweet, buttery caramel syrup, creating a decadent and comforting drink with a perfect balance of bitter and sweet notes.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mocha_coffee",
+      "name": "Mocha Coffee",
+      "category": "Coffee",
+      "description": "A classic blend of rich espresso, luscious chocolate syrup, and steamed milk, topped with a delicate layer of foam, offering a comforting and indulgent coffee experience.",
+      "base_price": 5.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "dirty_boba_milk",
+      "name": "Dirty Boba Milk",
+      "category": "Signature Drink",
+      "description": "A luscious blend of fresh milk swirled with a generous coating of rich, caramelized brown sugar syrup, and filled with perfectly chewy boba pearls. The 'dirty' refers to the streaks of brown sugar clinging to the cup, creating a visually appealing and decadently sweet treat.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "signature_fruit_tea",
+      "name": "Signature Fruit Tea",
+      "category": "Signature Drink",
+      "description": "Our special blend of refreshing tea generously loaded with a medley of fresh, seasonal fruit pieces, offering a delightful combination of sweet, tart, and fruity flavors with every sip. A vibrant and invigorating choice.",
+      "base_price": 6.29,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "tea_base": [
+            "Green Tea",
+            "Black Tea"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "grapefruit_yakult",
+      "name": "Grapefruit Yakult",
+      "category": "Signature Drink",
+      "description": "A unique and tangy concoction combining the zesty, slightly bitter notes of fresh grapefruit with the distinctive sweet and sour flavor of probiotic Yakult drink, for a refreshing and healthful beverage.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mango_yakult",
+      "name": "Mango Yakult",
+      "category": "Signature Drink",
+      "description": "A tropical fusion of sweet, ripe mango puree blended with the tangy, probiotic goodness of Yakult, creating a vibrant, fruity, and refreshingly unique drink.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_yakult",
+      "name": "Strawberry Yakult",
+      "category": "Signature Drink",
+      "description": "A delightful blend of fresh, juicy strawberry puree mixed with the distinctive tartness of Yakult, creating a fruity, slightly creamy, and wonderfully refreshing probiotic beverage.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "orange_yakult",
+      "name": "Orange Yakult",
+      "category": "Signature Drink",
+      "description": "A bright and zesty blend of fresh orange juice combined with the tangy, probiotic goodness of Yakult, offering a citrusy, healthy, and invigorating drink.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "passion_fruit_yakult",
+      "name": "Passion Fruit Yakult",
+      "category": "Signature Drink",
+      "description": "An exotic and tangy blend featuring the vibrant, sweet-tart flavor of passion fruit mixed with the unique probiotic taste of Yakult, for a truly tropical and refreshing experience.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_smoothie",
+      "name": "Strawberry Smoothie",
+      "category": "Smoothie",
+      "description": "A refreshing and creamy blend of sweet, ripe strawberries, ice, and a dairy base, creating a perfectly cool and fruity treat.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mango_smoothie",
+      "name": "Mango Smoothie",
+      "category": "Smoothie",
+      "description": "A thick, creamy, and tropical delight made with fresh, sweet mangoes blended with ice and a dairy base for a taste of sunshine in a cup.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "taro_smoothie",
+      "name": "Taro Smoothie",
+      "category": "Smoothie",
+      "description": "A velvety smooth and subtly sweet smoothie featuring the unique, nutty, and vanilla-like flavor of taro root, blended with ice and a creamy base for a delightful and exotic treat.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "avocado_smoothie",
+      "name": "Avocado Smoothie",
+      "category": "Smoothie",
+      "description": "A rich, creamy, and surprisingly refreshing smoothie made with fresh avocado, blended with ice and a touch of sweetness for a wholesome and satisfying drink.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "strawberry_banana_smoothie",
+      "name": "Strawberry Banana Smoothie",
+      "category": "Smoothie",
+      "description": "A classic and crowd-pleasing smoothie featuring the perfect blend of sweet, ripe strawberries and creamy bananas, blended with ice and a dairy base for a naturally delicious and energizing drink.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "matcha_smoothie",
+      "name": "Matcha Smoothie",
+      "category": "Smoothie",
+      "description": "A vibrant and creamy smoothie made with ceremonial grade matcha green tea powder, blended with ice and a dairy base for an earthy, slightly sweet, and invigorating beverage.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "chocolate_smoothie",
+      "name": "Chocolate Smoothie",
+      "category": "Smoothie",
+      "description": "A rich and decadent smoothie crafted with premium chocolate, blended with ice and a creamy dairy base for a luxurious, satisfying, and cooling treat for chocolate lovers.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "oreo_smoothie",
+      "name": "Oreo Smoothie",
+      "category": "Smoothie",
+      "description": "A fun and indulgent smoothie featuring crushed Oreo cookies blended into a creamy dairy base with ice, creating a delightful cookies-and-cream experience.",
+      "base_price": 5.69,
+      "sizes": [
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Lychee Jelly",
+        "Crystal Boba",
+        "Cheese Foam"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [
+          "Oat Milk",
+          "Almond Milk",
+          "Soy Milk"
+        ],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mini_pancakes",
+      "name": "Mini Pancakes",
+      "category": "Dessert",
+      "description": "A delightful plate of perfectly bite-sized, fluffy golden pancakes, served warm and ready to be drizzled with your choice of syrup or toppings for a sweet indulgence.",
+      "base_price": 4.99,
+      "sizes": [],
+      "add_ons": [
+        "Honey",
+        "Chocolate Syrup",
+        "Strawberry Syrup",
+        "Whipped Cream"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "waffle",
+      "name": "Waffle",
+      "category": "Dessert",
+      "description": "A freshly made, golden-brown waffle, crispy on the outside and soft on the inside, serving as a perfect canvas for sweet toppings or a simple, satisfying treat.",
+      "base_price": 4.99,
+      "sizes": [],
+      "add_ons": [
+        "Honey",
+        "Chocolate Syrup",
+        "Strawberry Syrup",
+        "Whipped Cream",
+        "Ice Cream"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "taro_ball",
+      "name": "Taro Ball",
+      "category": "Dessert",
+      "description": "Chewy, delightful balls made from taro root, offering a unique slightly sweet and earthy flavor with a soft, mochi-like texture. Often served warm, sometimes with sweet syrup or a creamy base.",
+      "base_price": 4.99,
+      "sizes": [],
+      "add_ons": [
+        "Condensed Milk",
+        "Red Bean Paste"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "souffle_pancakes",
+      "name": "Soufflé Pancakes",
+      "category": "Signature Dessert",
+      "description": "Incredibly light, airy, and fluffy Japanese-style soufflé pancakes that melt in your mouth, delicately prepared to perfection and often served with a dusting of powdered sugar, fresh fruit, and a side of syrup or cream.",
+      "base_price": 12.99,
+      "sizes": [],
+      "add_ons": [
+        "Fresh Fruit",
+        "Whipped Cream",
+        "Maple Syrup",
+        "Chocolate Syrup"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "shaved_ice",
+      "name": "Shaved Ice",
+      "category": "Signature Dessert",
+      "description": "A towering mountain of finely shaved ice, incredibly soft and melt-in-your-mouth, generously flavored with your choice of sweet strawberry, tropical mango, or rich chocolate syrup, and customizable with various toppings.",
+      "base_price": 10.99,
+      "sizes": [],
+      "add_ons": [
+        "Boba",
+        "Pudding",
+        "Grass Jelly",
+        "Red Bean",
+        "Fresh Fruit",
+        "Condensed Milk",
+        "Mochi"
+      ],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {
+          "flavor": [
+            "Strawberry",
+            "Mango",
+            "Chocolate"
+          ]
+        }
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    }
+  ],
+  "combos": [],
+  "modifiers": {
+    "milk_swap": [
+      "Oat Milk",
+      "Almond Milk",
+      "Soy Milk"
+    ],
+    "sauces": [],
+    "toppings": [
+      "Boba",
+      "Crystal Boba",
+      "Pudding",
+      "Grass Jelly",
+      "Red Bean",
+      "Lychee Jelly",
+      "Cheese Foam"
+    ],
+    "ice_level": [
+      "No Ice",
+      "Less Ice",
+      "Regular Ice"
+    ],
+    "protein_swap": [],
+    "bread_swap": [],
+    "extra": {
+      "sweetness_level": [
+        "0%",
+        "25%",
+        "50%",
+        "75%",
+        "100%"
+      ],
+      "tea_base": [
+        "Black Tea",
+        "Green Tea"
+      ],
+      "syrup_for_dessert": [
+        "Honey",
+        "Chocolate Syrup",
+        "Strawberry Syrup",
+        "Maple Syrup",
+        "Condensed Milk"
+      ]
+    }
+  },
+  "upsell_rules": [
+    {
+      "trigger": "order_any_drink",
+      "suggestion": "Would you like to add some delicious Boba or Crystal Boba to your drink for an extra chewy sensation?"
+    },
+    {
+      "trigger": "order_any_drink",
+      "suggestion": "Make it a Large for just $1.00 more!"
+    },
+    {
+      "trigger": "order_any_drink",
+      "suggestion": "Complete your experience with one of our delightful desserts like Mini Pancakes or Soufflé Pancakes!"
+    },
+    {
+      "trigger": "order_dessert",
+      "suggestion": "Pair your dessert with a refreshing Milk Tea or a Signature Drink!"
+    },
+    {
+      "trigger": "order_milk_tea",
+      "suggestion": "Try an alternative milk like Oat Milk or Almond Milk for a different twist!"
+    }
+  ],
+  "time_based_rules": []
+}

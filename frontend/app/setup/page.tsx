@@ -45,17 +45,8 @@ export default function SetupPage() {
     const [jobId, setJobId] = useState('');
     const [menuData, setMenuData] = useState<MenuData | null>(null);
     const [confirming, setConfirming] = useState(false);
-    const [activeRestaurant, setActiveRestaurant] = useState<{ restaurant_id: string; restaurant_name: string } | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const progressEndRef = useRef<HTMLDivElement>(null);
-
-    // Check active restaurant on mount
-    useEffect(() => {
-        fetch(`${API_URL}/api/pipeline/active`)
-            .then(r => r.json())
-            .then(d => { if (d.restaurant_id) setActiveRestaurant(d); })
-            .catch(() => { });
-    }, []);
 
     // Auto-scroll progress
     useEffect(() => {
@@ -192,27 +183,6 @@ export default function SetupPage() {
                         <div style={{ fontSize: 11, color: '#64748b' }}>Restaurant Onboarding</div>
                     </div>
                 </div>
-                {activeRestaurant && (
-                    <div style={{
-                        display: 'flex', alignItems: 'center', gap: 8,
-                        background: 'rgba(16,185,129,0.1)',
-                        border: '1px solid rgba(16,185,129,0.3)',
-                        borderRadius: 8, padding: '6px 12px',
-                    }}>
-                        <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#10b981' }} />
-                        <span style={{ fontSize: 12, color: '#10b981' }}>
-                            Active: <strong>{activeRestaurant.restaurant_name}</strong>
-                        </span>
-                        <button
-                            onClick={() => router.push('/')}
-                            style={{
-                                marginLeft: 4, padding: '2px 8px', borderRadius: 5,
-                                background: '#10b981', color: '#fff', border: 'none',
-                                fontSize: 11, cursor: 'pointer', fontWeight: 600,
-                            }}
-                        >Go to ordering →</button>
-                    </div>
-                )}
             </div>
 
             <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px' }}>

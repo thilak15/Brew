@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any, AsyncGenerator
 
 from fastapi import APIRouter, File, Form, HTTPException, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, FileResponse
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +117,17 @@ async def _run_pipeline_job(
         )
         prompt_path = save_prompt(prompt_text, restaurant_id)
         emit(f"✅ System prompt generated ({len(prompt_text)} chars)")
+
+        # ── Agent 3: Image Generation ─────────────────────────────────────
+        emit("🖼️ Agent 3: Generating delicious menu styling images...")
+        import agent3_image_generator
+        import importlib
+        importlib.reload(agent3_image_generator)
+        await loop.run_in_executor(
+            None,
+            lambda: agent3_image_generator.generate_images(restaurant_id, progress_callback=emit)
+        )
+        emit("✨ Image generation complete!")
 
         # ── Done ──────────────────────────────────────────────────────────
         emit("🎉 Pipeline complete! Review the menu below and confirm to activate.")
@@ -261,3 +272,85 @@ async def get_active():
     if not active and env_id:
         active = {"restaurant_id": env_id, "restaurant_name": env_id}
     return active or {}
+
+
+# ─── New: restaurant listing for home page ────────────────────────────────────
+
+@router.get("/restaurants")
+async def list_restaurants():
+    """
+    List all configured restaurants for the home page picker.
+    Always includes Brew as the built-in first entry.
+    Scans pipeline/output/{id}/menu.json for the rest.
+    """
+    restaurants = [
+        {
+            "restaurant_id": "brew",
+            "restaurant_name": "Brew",
+            "restaurant_type": "coffee",
+            "category_count": 3,
+            "item_count": 22,
+            "is_builtin": True,
+            "description": "Your favourite craft coffee drive-thru",
+        }
+    ]
+
+    # Scan pipeline outputs
+    if _OUTPUT_DIR.exists():
+        for child in sorted(_OUTPUT_DIR.iterdir()):
+            if not child.is_dir():
+                continue
+            menu_path = child / "menu.json"
+            if not menu_path.exists():
+                continue
+            try:
+                menu = json.loads(menu_path.read_text())
+                rest_info = menu.get("restaurant", {})
+                restaurants.append({
+                    "restaurant_id": child.name,
+                    "restaurant_name": rest_info.get("name", child.name),
+                    "restaurant_type": rest_info.get("type", "fast_food"),
+                    "category_count": len(menu.get("categories", [])),
+                    "item_count": len(menu.get("items", [])),
+                    "is_builtin": False,
+                    "description": f"{len(menu.get('categories', []))} categories · {len(menu.get('items', []))} items",
+                })
+            except Exception as e:
+                logger.warning("Failed to read menu for %s: %s", child.name, e)
+
+    return restaurants
+
+
+@router.delete("/restaurants/{restaurant_id}")
+async def delete_restaurant(restaurant_id: str):
+    """
+    Delete a configured restaurant by removing its pipeline output directory.
+    Cannot delete the built-in 'brew' restaurant.
+    """
+    if restaurant_id == "brew":
+        raise HTTPException(400, "Cannot delete the built-in Brew restaurant")
+
+    target_dir = _OUTPUT_DIR / restaurant_id
+    if not target_dir.exists() or not target_dir.is_dir():
+        raise HTTPException(404, f"Restaurant '{restaurant_id}' not found")
+
+    import shutil
+    try:
+        shutil.rmtree(target_dir)
+        logger.info("Deleted restaurant directory: %s", target_dir)
+        return {"status": "success", "message": f"Deleted {restaurant_id}"}
+    except Exception as e:
+        logger.exception("Failed to delete restaurant %s", restaurant_id)
+        raise HTTPException(500, f"Failed to delete restaurant: {e}")
+
+@router.get("/images/{restaurant_id}/{filename}")
+async def get_restaurant_image(restaurant_id: str, filename: str):
+    """Serve dynamically generated menu images."""
+    if restaurant_id == "brew":
+        raise HTTPException(404, "Brew images are served from frontend static files")
+        
+    image_path = _OUTPUT_DIR / restaurant_id / "images" / filename
+    if not image_path.exists() or not image_path.is_file():
+        raise HTTPException(404, "Image not found")
+        
+    return FileResponse(image_path)

@@ -121,6 +121,13 @@ class MenuItem(BaseModel):
         description="Can this item be ordered as part of a combo meal?"
     )
 
+    @field_validator("description", mode="before")
+    @classmethod
+    def normalize_description(cls, v: Any) -> str:
+        if v is None:
+            return ""
+        return str(v)
+
 
 class ComboMeal(BaseModel):
     """A combo/meal deal that bundles multiple items."""
@@ -134,6 +141,13 @@ class ComboMeal(BaseModel):
         description="What can be upgraded e.g. {'size': ['Medium→Large (+$0.50)'], 'drink': ['any fountain drink']}"
     )
     availability: str = Field(default="all_day")
+
+    @field_validator("description", mode="before")
+    @classmethod
+    def normalize_description(cls, v: Any) -> str:
+        if v is None:
+            return ""
+        return str(v)
 
     @field_validator("upgrade_options", mode="before")
     @classmethod

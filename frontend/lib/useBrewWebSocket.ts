@@ -25,6 +25,7 @@ const WS_URL = getWsUrl();
 export type UseBrewWebSocketOptions = {
   user_id?: string;
   session_id?: string;
+  restaurant_id?: string;  // which restaurant's agent to connect to (default: 'brew')
   dispatch: React.Dispatch<BrewAction>;
   connect: boolean;
   onAudioChunk?: (buffer: ArrayBuffer) => void;
@@ -33,6 +34,7 @@ export type UseBrewWebSocketOptions = {
 export function useBrewWebSocket({
   user_id = "user",
   session_id = "session",
+  restaurant_id = "brew",
   dispatch,
   connect,
   onAudioChunk,
@@ -56,7 +58,7 @@ export function useBrewWebSocket({
 
   useEffect(() => {
     if (!connect || !WS_URL) return;
-    const url = `${WS_URL.replace(/\/$/, "")}/ws/${encodeURIComponent(user_id)}/${encodeURIComponent(session_id)}`;
+    const url = `${WS_URL.replace(/\/$/, "")}/ws/${encodeURIComponent(restaurant_id)}/${encodeURIComponent(user_id)}/${encodeURIComponent(session_id)}`;
     dispatchRef.current({ type: "CONNECTION", status: "connecting" });
     const ws = new WebSocket(url);
     ws.binaryType = "arraybuffer";
@@ -123,7 +125,7 @@ export function useBrewWebSocket({
     return () => {
       disconnect();
     };
-  }, [connect, user_id, session_id, disconnect]);
+  }, [connect, user_id, session_id, restaurant_id, disconnect]);
 
   const sendAudio = useCallback((chunk: ArrayBuffer) => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {

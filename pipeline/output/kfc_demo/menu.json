@@ -1,19 +1,17 @@
 {
   "restaurant": {
     "restaurant_id": "kfc_demo",
-    "name": "kfc",
+    "name": "KFC",
     "type": "chicken",
     "currency": "USD",
     "drive_through": true,
-    "notes": "Prices and availability may vary by location. Please check your local KFC for exact details. Tax extra."
+    "notes": "Prices and availability may vary by location. All chicken is prepared with the Colonel's secret 11 herbs & spices. Available in Original Recipe or Extra Crispy."
   },
   "categories": [
-    "Limited Time Offers",
+    "Chicken",
+    "Combos",
     "Buckets",
-    "Chicken Meals",
-    "Chicken Sandwiches",
-    "Pot Pies & Bowls",
-    "Family Deals",
+    "Sandwiches",
     "Sides",
     "Sauces",
     "Desserts",
@@ -21,53 +19,18 @@
   ],
   "items": [
     {
-      "id": "kfc_mac_cheese_bowl_spicy",
-      "name": "KFC Mac & Cheese Bowl (Spicy)",
-      "category": "Limited Time Offers",
-      "description": "Spicy, crunchy fried chicken & a drizzle of Nashville Hot Sauce over creamy mac & cheese.",
-      "base_price": 7.79,
+      "id": "kfc_8_pc_chicken_2_large_sides_a_la_carte",
+      "name": "KFC® 8 pc. Chicken & 2 Large Sides A La Carte",
+      "category": "Chicken",
+      "description": "Eight pieces of KFC's world-famous fried chicken, prepared with their 11 herbs and spices, available in Original Recipe or Extra Crispy, offering a golden, crispy skin and tender, juicy meat. This generous meal is complemented by two large sides of your choice.",
+      "base_price": 30.99,
       "sizes": [],
       "add_ons": [],
       "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "limited_time",
-      "is_combo_eligible": true
-    },
-    {
-      "id": "kfc_mac_cheese_bowl",
-      "name": "KFC Mac & Cheese Bowl",
-      "category": "Limited Time Offers",
-      "description": "Creamy mac & cheese topped with crispy fried chicken and a sprinkle of three-cheese blend.",
-      "base_price": 7.79,
-      "sizes": [],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "limited_time",
-      "is_combo_eligible": true
-    },
-    {
-      "id": "12_pc_fried_chicken_bucket",
-      "name": "12 pc. Fried Chicken Bucket",
-      "category": "Buckets",
-      "description": "12 pieces of our world-famous fried chicken.",
-      "base_price": 34.99,
-      "sizes": [
-        "12 pc"
-      ],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
         "bread": [],
         "sauce": [],
         "milk": [],
@@ -77,54 +40,216 @@
       "is_combo_eligible": false
     },
     {
-      "id": "8_pc_fried_chicken_bucket",
-      "name": "8 pc. Fried Chicken Bucket",
-      "category": "Buckets",
-      "description": "8 pieces of our world-famous fried chicken.",
-      "base_price": 26.99,
-      "sizes": [
-        "8 pc"
-      ],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": false
-    },
-    {
-      "id": "6_pc_fried_chicken_bucket",
-      "name": "6 pc. Fried Chicken Bucket",
-      "category": "Buckets",
-      "description": "6 pieces of our world-famous fried chicken.",
-      "base_price": 20.99,
-      "sizes": [
-        "6 pc"
-      ],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": false
-    },
-    {
-      "id": "16_pc_fried_chicken_bucket",
-      "name": "16 pc. Fried Chicken Bucket",
-      "category": "Buckets",
-      "description": "16 pieces of our world-famous fried chicken.",
+      "id": "kfc_12_pc_chicken_3_large_sides_a_la_carte",
+      "name": "KFC® 12 pc. Chicken & 3 Large Sides A La Carte",
+      "category": "Chicken",
+      "description": "Twelve pieces of KFC's legendary fried chicken, available in Original Recipe or Extra Crispy, delivering that distinct, savory taste with a perfectly crisp exterior and succulent interior. Served with three large sides of your preference, making it ideal for a family feast.",
       "base_price": 42.99,
-      "sizes": [
-        "16 pc"
-      ],
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_16_pc_chicken_4_large_sides_a_la_carte",
+      "name": "KFC® 16 pc. Chicken & 4 Large Sides A La Carte",
+      "category": "Chicken",
+      "description": "Sixteen pieces of KFC's iconic fried chicken, choose between Original Recipe or Extra Crispy, each piece seasoned with the Colonel's secret 11 herbs and spices for an unforgettable flavor and satisfying crunch. This ultimate meal comes with four generous large sides.",
+      "base_price": 53.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_8_pc_chicken_only",
+      "name": "KFC® 8 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Eight pieces of KFC's delicious fried chicken, available in Original Recipe or Extra Crispy, hand-breaded and cooked to golden perfection, bursting with the savory blend of 11 herbs and spices.",
+      "base_price": 20.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_12_pc_chicken_only",
+      "name": "KFC® 12 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Twelve pieces of KFC's world-famous fried chicken, offered in your choice of Original Recipe or Extra Crispy, delivering a satisfying crunch and tender, flavorful meat with every bite.",
+      "base_price": 29.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_16_pc_chicken_only",
+      "name": "KFC® 16 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Sixteen pieces of KFC's legendary fried chicken, choose between Original Recipe or Extra Crispy, providing a substantial and delicious offering of perfectly seasoned and cooked chicken.",
+      "base_price": 38.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_2_pc_chicken_only",
+      "name": "KFC® 2 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Two pieces of KFC's delectable fried chicken, choose between the classic Original Recipe or the Extra Crispy option, both seasoned with the Colonel's secret 11 herbs and spices for maximum flavor and a juicy finish.",
+      "base_price": 6.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_3_pc_chicken_only",
+      "name": "KFC® 3 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Three pieces of KFC's delicious fried chicken, available in Original Recipe or Extra Crispy, perfectly seasoned and cooked to a golden finish, offering a tender and juicy interior with that unmistakable KFC taste.",
+      "base_price": 8.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_4_pc_chicken_only",
+      "name": "KFC® 4 pc. Chicken Only",
+      "category": "Chicken",
+      "description": "Four pieces of KFC's famous fried chicken, choose between Original Recipe or Extra Crispy, each piece expertly prepared with the Colonel's 11 herbs and spices, ensuring a satisfyingly crunchy and flavorful experience.",
+      "base_price": 10.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "3_pc_chicken_tenders_only",
+      "name": "3 pc. Chicken Tenders Only",
+      "category": "Chicken",
+      "description": "Three succulent, all-white meat crispy chicken tenders, expertly seasoned and fried to a golden perfection, offering a tender and juicy bite every time.",
+      "base_price": 6.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "5_pc_chicken_tenders_only",
+      "name": "5 pc. Chicken Tenders Only",
+      "category": "Chicken",
+      "description": "Five succulent, all-white meat crispy chicken tenders, expertly seasoned and fried to a golden perfection, ideal for a satisfying meal or sharing.",
+      "base_price": 8.49,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "8_pc_chicken_tenders_only",
+      "name": "8 pc. Chicken Tenders Only",
+      "category": "Chicken",
+      "description": "Eight succulent, all-white meat crispy chicken tenders, expertly seasoned and fried to a golden perfection, perfect for sharing with family and friends.",
+      "base_price": 12.49,
+      "sizes": [],
       "add_ons": [],
       "swappables": {
         "protein": [],
@@ -137,11 +262,11 @@
       "is_combo_eligible": false
     },
     {
-      "id": "fried_chicken_2_pc",
-      "name": "2 pc. Fried Chicken",
-      "category": "Chicken Meals",
-      "description": "Two pieces of our world-famous fried chicken.",
-      "base_price": 0.0,
+      "id": "12_pc_chicken_nuggets_only",
+      "name": "12 pc. Chicken Nuggets Only",
+      "category": "Chicken",
+      "description": "Twelve crispy, golden-brown chicken nuggets, made with 100% white meat chicken, seasoned and fried to a perfect crunch, ideal for dipping in your favorite sauce.",
+      "base_price": 7.99,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -155,11 +280,11 @@
       "is_combo_eligible": true
     },
     {
-      "id": "fried_chicken_3_pc",
-      "name": "3 pc. Fried Chicken",
-      "category": "Chicken Meals",
-      "description": "Three pieces of our world-famous fried chicken.",
-      "base_price": 0.0,
+      "id": "36_pc_chicken_nuggets_only",
+      "name": "36 pc. Chicken Nuggets Only",
+      "category": "Chicken",
+      "description": "A generous serving of thirty-six crispy, golden-brown chicken nuggets, made with 100% white meat chicken, seasoned and fried to a perfect crunch, perfect for sharing or a party.",
+      "base_price": 18.99,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -170,67 +295,13 @@
         "other": {}
       },
       "availability": "all_day",
-      "is_combo_eligible": true
-    },
-    {
-      "id": "crispy_strips_3_pc",
-      "name": "3 pc. Crispy Strips",
-      "category": "Chicken Meals",
-      "description": "Three of our crispy, juicy chicken strips.",
-      "base_price": 0.0,
-      "sizes": [],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": true
-    },
-    {
-      "id": "crispy_strips_5_pc",
-      "name": "5 pc. Crispy Strips",
-      "category": "Chicken Meals",
-      "description": "Five of our crispy, juicy chicken strips.",
-      "base_price": 0.0,
-      "sizes": [],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": true
-    },
-    {
-      "id": "popcorn_chicken",
-      "name": "Popcorn Chicken",
-      "category": "Chicken Meals",
-      "description": "Bite-sized pieces of our crispy chicken.",
-      "base_price": 0.0,
-      "sizes": [],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": true
+      "is_combo_eligible": false
     },
     {
       "id": "kfc_classic_chicken_sandwich",
-      "name": "KFC Classic Chicken Sandwich",
-      "category": "Chicken Sandwiches",
-      "description": "Our fried chicken sandwich, available in classic or spicy.",
+      "name": "KFC® Classic Chicken Sandwich",
+      "category": "Sandwiches",
+      "description": "A premium, juicy, extra crispy fried chicken fillet, perfectly seasoned and nestled in a toasted brioche bun with thick-cut pickles and the Colonel's rich, creamy mayonnaise.",
       "base_price": 6.99,
       "sizes": [],
       "add_ons": [],
@@ -239,22 +310,17 @@
         "bread": [],
         "sauce": [],
         "milk": [],
-        "other": {
-          "flavor": [
-            "classic",
-            "spicy"
-          ]
-        }
+        "other": {}
       },
       "availability": "all_day",
       "is_combo_eligible": true
     },
     {
-      "id": "famous_bowl",
-      "name": "Famous Bowl",
-      "category": "Pot Pies & Bowls",
-      "description": "Creamy mashed potatoes, sweet corn and bite-sized crispy chicken layered together and drizzled with gravy and topped with a three-cheese blend.",
-      "base_price": 7.79,
+      "id": "kfc_spicy_chicken_sandwich",
+      "name": "KFC® Spicy Chicken Sandwich",
+      "category": "Sandwiches",
+      "description": "For those who crave a kick, this sandwich features a juicy, extra crispy fried chicken fillet, seasoned with a bold spicy blend, served on a toasted brioche bun with crisp pickles and a fiery, creamy spicy mayonnaise.",
+      "base_price": 6.99,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -268,11 +334,11 @@
       "is_combo_eligible": true
     },
     {
-      "id": "chicken_pot_pie",
-      "name": "Chicken Pot Pie",
-      "category": "Pot Pies & Bowls",
-      "description": "Our savory pot pie with chunks of chicken, diced potatoes, peas, carrots and a creamy sauce baked in a golden flaky crust.",
-      "base_price": 7.79,
+      "id": "kfc_chicken_little_sandwich",
+      "name": "KFC® Chicken Little® Sandwich",
+      "category": "Sandwiches",
+      "description": "A delightful small sandwich featuring a crispy fried chicken tender, served on a soft bun with fresh pickles and a touch of creamy mayonnaise, perfect for a lighter bite.",
+      "base_price": 2.79,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -284,17 +350,34 @@
       },
       "availability": "all_day",
       "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_3_pc_chicken_little_sandwiches",
+      "name": "KFC® 3 pc. Chicken Little® Sandwiches",
+      "category": "Sandwiches",
+      "description": "A trio of our popular Chicken Little sandwiches, each with a crispy fried chicken tender, pickles, and mayo on a soft bun, ideal for sharing or a more substantial snack.",
+      "base_price": 7.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
     },
     {
       "id": "secret_recipe_fries",
       "name": "Secret Recipe Fries",
       "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
+      "description": "Crispy, golden-brown French fries seasoned with KFC's unique blend of secret spices, offering a flavorful and satisfying crunch with every bite.",
+      "base_price": 3.49,
       "sizes": [
-        "individual",
-        "large",
-        "family"
+        "Regular",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -311,12 +394,11 @@
       "id": "mashed_potatoes_gravy",
       "name": "Mashed Potatoes & Gravy",
       "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
+      "description": "Creamy, fluffy mashed potatoes made from real potatoes, smothered in KFC's rich, savory gravy, a classic comfort food side.",
+      "base_price": 3.49,
       "sizes": [
-        "individual",
-        "large",
-        "family"
+        "Regular",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -333,12 +415,11 @@
       "id": "coleslaw",
       "name": "Coleslaw",
       "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
+      "description": "Freshly prepared, crisp cabbage and carrots mixed in a tangy, sweet, and creamy dressing, offering a refreshing counterpoint to the fried chicken.",
+      "base_price": 3.49,
       "sizes": [
-        "individual",
-        "large",
-        "family"
+        "Regular",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -355,34 +436,11 @@
       "id": "sweet_kernel_corn",
       "name": "Sweet Kernel Corn",
       "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
+      "description": "Deliciously sweet and tender whole kernel corn, steamed to perfection, providing a simple yet satisfying vegetable side.",
+      "base_price": 3.49,
       "sizes": [
-        "individual",
-        "large",
-        "family"
-      ],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": false
-    },
-    {
-      "id": "mac_cheese",
-      "name": "Mac & Cheese",
-      "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
-      "sizes": [
-        "individual",
-        "large",
-        "family"
+        "Regular",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -399,12 +457,32 @@
       "id": "green_beans",
       "name": "Green Beans",
       "category": "Sides",
-      "description": "",
-      "base_price": 3.29,
+      "description": "Flavorful green beans cooked until tender-crisp, often seasoned with a hint of ham or other savory spices, a comforting Southern-style side.",
+      "base_price": 3.49,
       "sizes": [
-        "individual",
-        "large",
-        "family"
+        "Regular",
+        "Large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "mac_cheese",
+      "name": "Mac & Cheese",
+      "category": "Sides",
+      "description": "Creamy and rich macaroni pasta baked in a cheesy sauce, a decadent and satisfying side dish loved by all ages.",
+      "base_price": 3.49,
+      "sizes": [
+        "Regular",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -421,8 +499,8 @@
       "id": "biscuit",
       "name": "Biscuit",
       "category": "Sides",
-      "description": "",
-      "base_price": 1.29,
+      "description": "A fluffy, warm, and buttery buttermilk biscuit, freshly baked to a golden perfection, ideal for soaking up gravy or enjoying on its own.",
+      "base_price": 1.0,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -436,11 +514,101 @@
       "is_combo_eligible": false
     },
     {
+      "id": "4_biscuits",
+      "name": "4 Biscuits",
+      "category": "Sides",
+      "description": "Four fluffy, warm, and buttery buttermilk biscuits, freshly baked to a golden perfection, perfect for sharing or a family meal.",
+      "base_price": 3.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "6_biscuits",
+      "name": "6 Biscuits",
+      "category": "Sides",
+      "description": "Six fluffy, warm, and buttery buttermilk biscuits, freshly baked to a golden perfection, a generous portion for larger gatherings.",
+      "base_price": 5.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "12_biscuits",
+      "name": "12 Biscuits",
+      "category": "Sides",
+      "description": "A dozen fluffy, warm, and buttery buttermilk biscuits, freshly baked to a golden perfection, ensuring everyone gets a taste of this Southern staple.",
+      "base_price": 9.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "kfc_famous_bowl",
+      "name": "KFC® Famous Bowl®",
+      "category": "Sides",
+      "description": "A hearty and savory bowl layered with creamy mashed potatoes, sweet corn, bite-sized crispy fried chicken, savory gravy, and topped with a blend of three shredded cheeses.",
+      "base_price": 5.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
+      "id": "kfc_pot_pie",
+      "name": "KFC® Pot Pie",
+      "category": "Sides",
+      "description": "A comforting and rich individual chicken pot pie, filled with tender chicken pieces, diced potatoes, carrots, peas, and a savory sauce, all baked under a flaky golden crust.",
+      "base_price": 5.99,
+      "sizes": [],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": true
+    },
+    {
       "id": "kfc_sauce",
       "name": "KFC Sauce",
       "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
+      "description": "KFC's signature sweet and tangy sauce, perfect for dipping chicken, tenders, or fries, adding a unique flavor dimension.",
+      "base_price": 0.5,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -457,26 +625,8 @@
       "id": "honey_bbq_sauce",
       "name": "Honey BBQ Sauce",
       "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
-      "sizes": [],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": false
-    },
-    {
-      "id": "classic_ranch_sauce",
-      "name": "Classic Ranch Sauce",
-      "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
+      "description": "A classic barbecue sauce with a sweet honey glaze, offering a smoky and tangy flavor profile, ideal for pairing with chicken.",
+      "base_price": 0.5,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -493,8 +643,8 @@
       "id": "honey_mustard_sauce",
       "name": "Honey Mustard Sauce",
       "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
+      "description": "A delightful blend of sweet honey and tangy mustard, creating a creamy and versatile dipping sauce that complements chicken perfectly.",
+      "base_price": 0.5,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -511,8 +661,8 @@
       "id": "creamy_buffalo_sauce",
       "name": "Creamy Buffalo Sauce",
       "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
+      "description": "A rich and creamy sauce infused with the bold, spicy kick of traditional buffalo flavor, perfect for those who enjoy a bit of heat.",
+      "base_price": 0.5,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -526,11 +676,11 @@
       "is_combo_eligible": false
     },
     {
-      "id": "sweet_n_tangy_sauce",
-      "name": "Sweet N Tangy Sauce",
+      "id": "ranch_sauce",
+      "name": "Ranch Sauce",
       "category": "Sauces",
-      "description": "",
-      "base_price": 0.0,
+      "description": "A cool, creamy, and herbaceous ranch dressing, offering a refreshing and savory taste that pairs well with almost anything.",
+      "base_price": 0.5,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -547,8 +697,8 @@
       "id": "chocolate_chip_cookie",
       "name": "Chocolate Chip Cookie",
       "category": "Desserts",
-      "description": "",
-      "base_price": 1.99,
+      "description": "A warm, soft, and chewy chocolate chip cookie, loaded with rich chocolate morsels, baked to golden perfection for a sweet treat.",
+      "base_price": 1.49,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -562,11 +712,11 @@
       "is_combo_eligible": false
     },
     {
-      "id": "12_pc_chocolate_chip_cookie_share_pack",
-      "name": "12-Piece Chocolate Chip Cookie Share Pack",
+      "id": "12_pc_chocolate_chip_cookies",
+      "name": "12 pc. Chocolate Chip Cookies",
       "category": "Desserts",
-      "description": "",
-      "base_price": 6.99,
+      "description": "A dozen warm, soft, and chewy chocolate chip cookies, packed with generous chocolate chips, perfect for sharing or enjoying throughout the week.",
+      "base_price": 9.99,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -580,14 +730,14 @@
       "is_combo_eligible": false
     },
     {
-      "id": "pepsi",
-      "name": "Pepsi",
+      "id": "coca_cola",
+      "name": "Coca-Cola",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "The classic, refreshing taste of Coca-Cola, a crisp and effervescent soda that perfectly complements any meal.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -601,14 +751,14 @@
       "is_combo_eligible": false
     },
     {
-      "id": "diet_pepsi",
-      "name": "Diet Pepsi",
+      "id": "diet_coke",
+      "name": "Diet Coke",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "The crisp and sugar-free alternative to Coca-Cola, offering the same great taste without the calories.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -622,35 +772,14 @@
       "is_combo_eligible": false
     },
     {
-      "id": "mountain_dew",
-      "name": "Mountain Dew",
+      "id": "sprite",
+      "name": "Sprite",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "A refreshing, lemon-lime flavored soda with a clean and crisp taste, perfect for quenching your thirst.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
-      ],
-      "add_ons": [],
-      "swappables": {
-        "protein": [],
-        "bread": [],
-        "sauce": [],
-        "milk": [],
-        "other": {}
-      },
-      "availability": "all_day",
-      "is_combo_eligible": false
-    },
-    {
-      "id": "starry",
-      "name": "Starry",
-      "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
-      "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -667,11 +796,11 @@
       "id": "dr_pepper",
       "name": "Dr. Pepper",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "A unique blend of 23 flavors, Dr. Pepper offers a distinctive and refreshing soda experience.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -685,14 +814,35 @@
       "is_combo_eligible": false
     },
     {
-      "id": "lipton_brisk_sweet_tea",
-      "name": "Lipton Brisk Sweet Tea",
+      "id": "mountain_dew",
+      "name": "Mountain Dew",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "A bold and energizing citrus-flavored soda with a sweet and tangy kick.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
+      ],
+      "add_ons": [],
+      "swappables": {
+        "protein": [],
+        "bread": [],
+        "sauce": [],
+        "milk": [],
+        "other": {}
+      },
+      "availability": "all_day",
+      "is_combo_eligible": false
+    },
+    {
+      "id": "sweet_tea",
+      "name": "Sweet Tea",
+      "category": "Drinks",
+      "description": "Classic Southern sweet tea, freshly brewed and perfectly sweetened for a refreshing and authentic taste.",
+      "base_price": 2.29,
+      "sizes": [
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -709,11 +859,11 @@
       "id": "unsweetened_tea",
       "name": "Unsweetened Tea",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "Freshly brewed iced tea, unsweetened, offering a crisp and natural tea flavor.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -727,14 +877,14 @@
       "is_combo_eligible": false
     },
     {
-      "id": "pink_lemonade",
-      "name": "Pink Lemonade",
+      "id": "lemonade",
+      "name": "Lemonade",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "Tart and sweet lemonade, a classic refreshing beverage perfect for any occasion.",
+      "base_price": 2.29,
       "sizes": [
-        "medium",
-        "large"
+        "Medium",
+        "Large"
       ],
       "add_ons": [],
       "swappables": {
@@ -751,9 +901,11 @@
       "id": "orange_juice",
       "name": "Orange Juice",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
-      "sizes": [],
+      "description": "Refreshing and tangy orange juice, a perfect complement to breakfast or any meal.",
+      "base_price": 2.29,
+      "sizes": [
+        "Small"
+      ],
       "add_ons": [],
       "swappables": {
         "protein": [],
@@ -769,9 +921,11 @@
       "id": "milk",
       "name": "Milk",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
-      "sizes": [],
+      "description": "Cold, wholesome milk, a classic beverage choice.",
+      "base_price": 2.29,
+      "sizes": [
+        "Small"
+      ],
       "add_ons": [],
       "swappables": {
         "protein": [],
@@ -787,8 +941,8 @@
       "id": "bottled_water",
       "name": "Bottled Water",
       "category": "Drinks",
-      "description": "",
-      "base_price": 2.49,
+      "description": "Crisp and refreshing bottled water, perfect for staying hydrated.",
+      "base_price": 2.29,
       "sizes": [],
       "add_ons": [],
       "swappables": {
@@ -804,266 +958,340 @@
   ],
   "combos": [
     {
-      "id": "kfc_mac_cheese_bowl_combo",
-      "name": "KFC Mac & Cheese Bowl Combo",
-      "description": "KFC Mac & Cheese Bowl, Secret Recipe Fries & a Medium Drink.",
-      "base_price": 9.99,
-      "includes": [
-        "KFC Mac & Cheese Bowl",
-        "Secret Recipe Fries",
-        "Medium Drink"
-      ],
-      "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
-        ],
-        "drinks": [
-          "large_drink"
-        ]
-      },
-      "availability": "limited_time"
-    },
-    {
-      "id": "kfc_mac_cheese_bowl_spicy_combo",
-      "name": "KFC Mac & Cheese Bowl (Spicy) Combo",
-      "description": "KFC Mac & Cheese Bowl (Spicy), Secret Recipe Fries & a Medium Drink.",
-      "base_price": 9.99,
-      "includes": [
-        "KFC Mac & Cheese Bowl (Spicy)",
-        "Secret Recipe Fries",
-        "Medium Drink"
-      ],
-      "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
-        ],
-        "drinks": [
-          "large_drink"
-        ]
-      },
-      "availability": "limited_time"
-    },
-    {
-      "id": "2_pc_fried_chicken_combo",
-      "name": "2 pc. Fried Chicken Combo",
-      "description": "2 pieces of fried chicken, a side of Secret Recipe Fries, a biscuit, and a medium drink.",
-      "base_price": 8.99,
+      "id": "kfc_2_pc_chicken_combo",
+      "name": "KFC® 2 pc. Chicken Combo",
+      "description": "Two pieces of KFC's famous fried chicken (Original Recipe or Extra Crispy), cooked to golden perfection and seasoned with the iconic 11 herbs and spices, served with a regular side of your choice and a medium drink.",
+      "base_price": 7.99,
       "includes": [
         "2 pc. Fried Chicken",
-        "Secret Recipe Fries",
-        "Biscuit",
+        "Regular Side",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
+        "side_size": [
+          "Large"
         ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
+        ],
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "3_pc_fried_chicken_combo",
-      "name": "3 pc. Fried Chicken Combo",
-      "description": "3 pieces of fried chicken, a side of Secret Recipe Fries, a biscuit, and a medium drink.",
-      "base_price": 9.99,
+      "id": "kfc_3_pc_chicken_combo",
+      "name": "KFC® 3 pc. Chicken Combo",
+      "description": "Three pieces of KFC's famous fried chicken (Original Recipe or Extra Crispy), deliciously seasoned and cooked until perfectly crispy and juicy, served with a regular side of your choice and a medium drink.",
+      "base_price": 9.49,
       "includes": [
         "3 pc. Fried Chicken",
-        "Secret Recipe Fries",
-        "Biscuit",
+        "Regular Side",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
+        "side_size": [
+          "Large"
         ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
+        ],
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "popcorn_chicken_combo",
-      "name": "Popcorn Chicken Combo",
-      "description": "Popcorn Chicken, Secret Recipe Fries & a Medium Drink.",
-      "base_price": 9.99,
+      "id": "kfc_4_pc_chicken_combo",
+      "name": "KFC® 4 pc. Chicken Combo",
+      "description": "Four pieces of KFC's classic Original Recipe or Extra Crispy fried chicken, featuring the unmistakable taste of 11 herbs and spices with a perfectly crispy exterior and tender interior, served with a regular side of your choice and a medium drink.",
+      "base_price": 11.49,
       "includes": [
-        "Popcorn Chicken",
-        "Secret Recipe Fries",
+        "4 pc. Fried Chicken",
+        "Regular Side",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
+        "side_size": [
+          "Large"
         ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
+        ],
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "kfc_crispy_strips_combo_3_pc",
-      "name": "KFC Crispy Strips Combo (3 pc.)",
-      "description": "3 Crispy Strips, Secret Recipe Fries, a biscuit & a medium drink.",
-      "base_price": 9.99,
+      "id": "kfc_famous_bowl_combo",
+      "name": "KFC® Famous Bowl® Combo",
+      "description": "A hearty and savory bowl layered with creamy mashed potatoes, sweet corn, bite-sized crispy fried chicken, savory gravy, and topped with a blend of three shredded cheeses. Served with a medium drink.",
+      "base_price": 7.99,
       "includes": [
-        "3 pc. Crispy Strips",
-        "Secret Recipe Fries",
-        "Biscuit",
+        "KFC Famous Bowl",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
-        ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "kfc_crispy_strips_combo_5_pc",
-      "name": "KFC Crispy Strips Combo (5 pc.)",
-      "description": "5 Crispy Strips, Secret Recipe Fries, a biscuit & a medium drink.",
-      "base_price": 12.99,
+      "id": "kfc_pot_pie_combo",
+      "name": "KFC® Pot Pie Combo",
+      "description": "A comforting and rich chicken pot pie, filled with tender chicken pieces, diced potatoes, carrots, peas, and a savory sauce, all baked under a flaky golden crust. Served with a medium drink.",
+      "base_price": 7.99,
       "includes": [
-        "5 pc. Crispy Strips",
-        "Secret Recipe Fries",
-        "Biscuit",
+        "KFC Pot Pie",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
-        ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
         ]
       },
       "availability": "all_day"
     },
     {
       "id": "kfc_classic_chicken_sandwich_combo",
-      "name": "KFC Classic Chicken Sandwich Combo",
-      "description": "KFC Chicken Sandwich (Classic or Spicy), a side of Secret Recipe Fries, and a medium drink.",
-      "base_price": 9.99,
+      "name": "KFC® Classic Chicken Sandwich Combo",
+      "description": "A juicy, extra crispy fried chicken fillet, served on a toasted brioche bun with crispy pickles and the Colonel's creamy mayo. Served with a regular side of your choice and a medium drink.",
+      "base_price": 9.49,
       "includes": [
         "KFC Classic Chicken Sandwich",
-        "Secret Recipe Fries",
+        "Regular Side",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
+        "side_size": [
+          "Large"
         ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
+        ],
+        "sandwich_spice": [
+          "Spicy"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "famous_bowl_combo",
-      "name": "Famous Bowl Combo",
-      "description": "Famous Bowl, Secret Recipe Fries & a Medium Drink.",
+      "id": "kfc_spicy_chicken_sandwich_combo",
+      "name": "KFC® Spicy Chicken Sandwich Combo",
+      "description": "A fiery version of the classic, featuring a juicy, extra crispy fried chicken fillet, served on a toasted brioche bun with crispy pickles and a spicy mayo. Served with a regular side of your choice and a medium drink.",
+      "base_price": 9.49,
+      "includes": [
+        "KFC Spicy Chicken Sandwich",
+        "Regular Side",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "side_size": [
+          "Large"
+        ],
+        "drink_size": [
+          "Large"
+        ],
+        "sandwich_spice": [
+          "Classic"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_chicken_little_sandwich_combo",
+      "name": "KFC® Chicken Little Sandwich Combo",
+      "description": "Three mini sandwiches, each featuring a crispy fried chicken tender on a small bun with pickles and mayo. Served with a regular side of your choice and a medium drink.",
+      "base_price": 7.99,
+      "includes": [
+        "3 pc. Chicken Little Sandwiches",
+        "Regular Side",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "side_size": [
+          "Large"
+        ],
+        "drink_size": [
+          "Large"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_5_pc_tenders_combo",
+      "name": "KFC® 5 pc. Tenders Combo",
+      "description": "Five succulent, all-white meat crispy chicken tenders, expertly seasoned and fried to a golden perfection. Served with a dipping sauce, a regular side of your choice, and a medium drink.",
+      "base_price": 10.49,
+      "includes": [
+        "5 pc. Chicken Tenders",
+        "Dipping Sauce",
+        "Regular Side",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "side_size": [
+          "Large"
+        ],
+        "drink_size": [
+          "Large"
+        ],
+        "add_sauce": [
+          "KFC Sauce",
+          "Honey BBQ Sauce",
+          "Honey Mustard Sauce",
+          "Creamy Buffalo Sauce",
+          "Ranch Sauce"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_3_pc_tenders_combo",
+      "name": "KFC® 3 pc. Tenders Combo",
+      "description": "Three tender, juicy, all-white meat chicken tenders, hand-breaded and fried until golden brown. Served with a dipping sauce, a regular side of your choice, and a medium drink.",
+      "base_price": 8.49,
+      "includes": [
+        "3 pc. Chicken Tenders",
+        "Dipping Sauce",
+        "Regular Side",
+        "Medium Drink"
+      ],
+      "upgrade_options": {
+        "side_size": [
+          "Large"
+        ],
+        "drink_size": [
+          "Large"
+        ],
+        "add_sauce": [
+          "KFC Sauce",
+          "Honey BBQ Sauce",
+          "Honey Mustard Sauce",
+          "Creamy Buffalo Sauce",
+          "Ranch Sauce"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_12_pc_nuggets_combo",
+      "name": "KFC® 12 pc. Nuggets Combo",
+      "description": "Twelve crispy, golden-brown chicken nuggets, made with 100% white meat chicken, perfect for dipping. Served with a regular side of your choice and a medium drink.",
       "base_price": 9.99,
       "includes": [
-        "Famous Bowl",
-        "Secret Recipe Fries",
+        "12 pc. Chicken Nuggets",
+        "Regular Side",
         "Medium Drink"
       ],
       "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
+        "side_size": [
+          "Large"
         ],
-        "drinks": [
-          "large_drink"
+        "drink_size": [
+          "Large"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "chicken_pot_pie_combo",
-      "name": "Chicken Pot Pie Combo",
-      "description": "Chicken Pot Pie, Secret Recipe Fries & a Medium Drink.",
-      "base_price": 9.99,
-      "includes": [
-        "Chicken Pot Pie",
-        "Secret Recipe Fries",
-        "Medium Drink"
-      ],
-      "upgrade_options": {
-        "sides": [
-          "large_secret_recipe_fries",
-          "family_secret_recipe_fries"
-        ],
-        "drinks": [
-          "large_drink"
-        ]
-      },
-      "availability": "all_day"
-    },
-    {
-      "id": "12_pc_fried_chicken_3_large_sides_meal",
-      "name": "12 pc. Fried Chicken & 3 Large Sides Meal",
-      "description": "12 pieces of fried chicken, 3 large sides (choice), and 6 biscuits.",
-      "base_price": 39.99,
-      "includes": [
-        "12 pc. Fried Chicken",
-        "3 Large Sides (choice)",
-        "6 Biscuits"
-      ],
-      "upgrade_options": {
-        "sides": [
-          "family_sized_side_upgrade"
-        ]
-      },
-      "availability": "all_day"
-    },
-    {
-      "id": "8_pc_fried_chicken_2_large_sides_meal",
-      "name": "8 pc. Fried Chicken & 2 Large Sides Meal",
-      "description": "8 pieces of fried chicken, 2 large sides (choice), and 4 biscuits.",
-      "base_price": 29.99,
+      "id": "kfc_8_pc_family_fill_up",
+      "name": "KFC® 8 pc. Family Fill Up",
+      "description": "An abundant meal featuring eight pieces of KFC's famous fried chicken (Original Recipe or Extra Crispy), two large sides of your choice, and four fluffy biscuits. Perfect for feeding the whole family.",
+      "base_price": 30.99,
       "includes": [
         "8 pc. Fried Chicken",
-        "2 Large Sides (choice)",
+        "2 Large Sides",
         "4 Biscuits"
       ],
       "upgrade_options": {
-        "sides": [
-          "family_sized_side_upgrade"
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "add_biscuits": [
+          "Biscuit",
+          "6 Biscuits",
+          "12 Biscuits"
+        ],
+        "add_sides": [
+          "Secret Recipe Fries (L)",
+          "Mashed Potatoes & Gravy (L)",
+          "Coleslaw (L)",
+          "Sweet Kernel Corn (L)",
+          "Green Beans (L)",
+          "Mac & Cheese (L)"
         ]
       },
       "availability": "all_day"
     },
     {
-      "id": "16_pc_fried_chicken_4_large_sides_meal",
-      "name": "16 pc. Fried Chicken & 4 Large Sides Meal",
-      "description": "16 pieces of fried chicken, 4 large sides (choice), and 8 biscuits.",
-      "base_price": 49.99,
+      "id": "kfc_12_pc_family_fill_up",
+      "name": "KFC® 12 pc. Family Fill Up",
+      "description": "A generous family meal including twelve pieces of KFC's signature fried chicken (Original Recipe or Extra Crispy), three large sides of your choice, and six fluffy biscuits, providing a satisfying feast for everyone.",
+      "base_price": 42.99,
+      "includes": [
+        "12 pc. Fried Chicken",
+        "3 Large Sides",
+        "6 Biscuits"
+      ],
+      "upgrade_options": {
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "add_biscuits": [
+          "Biscuit",
+          "4 Biscuits",
+          "12 Biscuits"
+        ],
+        "add_sides": [
+          "Secret Recipe Fries (L)",
+          "Mashed Potatoes & Gravy (L)",
+          "Coleslaw (L)",
+          "Sweet Kernel Corn (L)",
+          "Green Beans (L)",
+          "Mac & Cheese (L)"
+        ]
+      },
+      "availability": "all_day"
+    },
+    {
+      "id": "kfc_16_pc_family_fill_up",
+      "name": "KFC® 16 pc. Family Fill Up",
+      "description": "The ultimate family feast featuring sixteen pieces of KFC's legendary fried chicken (Original Recipe or Extra Crispy), four large sides of your choice, and eight fluffy biscuits, ensuring everyone gets their fill.",
+      "base_price": 53.99,
       "includes": [
         "16 pc. Fried Chicken",
-        "4 Large Sides (choice)",
+        "4 Large Sides",
         "8 Biscuits"
       ],
       "upgrade_options": {
-        "sides": [
-          "family_sized_side_upgrade"
+        "protein": [
+          "Original Recipe",
+          "Extra Crispy"
+        ],
+        "add_biscuits": [
+          "Biscuit",
+          "4 Biscuits",
+          "6 Biscuits"
+        ],
+        "add_sides": [
+          "Secret Recipe Fries (L)",
+          "Mashed Potatoes & Gravy (L)",
+          "Coleslaw (L)",
+          "Sweet Kernel Corn (L)",
+          "Green Beans (L)",
+          "Mac & Cheese (L)"
         ]
       },
       "availability": "all_day"
@@ -1074,72 +1302,49 @@
     "sauces": [
       "KFC Sauce",
       "Honey BBQ Sauce",
-      "Classic Ranch Sauce",
       "Honey Mustard Sauce",
       "Creamy Buffalo Sauce",
-      "Sweet N Tangy Sauce"
+      "Ranch Sauce"
     ],
     "toppings": [],
     "ice_level": [],
-    "protein_swap": [],
+    "protein_swap": [
+      "Original Recipe",
+      "Extra Crispy"
+    ],
     "bread_swap": [],
     "extra": {
-      "side_choices": [
-        "Secret Recipe Fries",
-        "Mashed Potatoes & Gravy",
-        "Coleslaw",
-        "Sweet Kernel Corn",
-        "Mac & Cheese",
-        "Green Beans",
+      "side_size_upgrade": [
+        "Large"
+      ],
+      "drink_size_upgrade": [
+        "Large"
+      ],
+      "biscuit_add": [
         "Biscuit"
       ],
-      "drink_choices": [
-        "Pepsi",
-        "Diet Pepsi",
-        "Mountain Dew",
-        "Starry",
-        "Dr. Pepper",
-        "Lipton Brisk Sweet Tea",
-        "Unsweetened Tea",
-        "Pink Lemonade",
-        "Orange Juice",
-        "Milk",
-        "Bottled Water"
+      "sandwich_spice_level": [
+        "Spicy",
+        "Classic"
       ]
     }
   },
   "upsell_rules": [
     {
-      "trigger": "order_combo_eligible_item",
-      "suggestion": "Make it a combo meal with a side and drink!"
+      "trigger": "Ordering any chicken item (pieces, tenders, sandwich)",
+      "suggestion": "Add a side or drink to make it a meal!"
     },
     {
-      "trigger": "order_main_item_without_combo",
-      "suggestion": "Add a side to your order."
+      "trigger": "Ordering a combo",
+      "suggestion": "Upgrade your drink or side to a large, or add a dessert."
     },
     {
-      "trigger": "order_main_item_without_combo",
-      "suggestion": "Don't forget a refreshing drink!"
+      "trigger": "Ordering a bucket or family meal",
+      "suggestion": "Don't forget extra biscuits or more of your favorite sides!"
     },
     {
-      "trigger": "order_any_meal",
-      "suggestion": "Treat yourself to a Chocolate Chip Cookie."
-    },
-    {
-      "trigger": "combo_includes_individual_side",
-      "suggestion": "Upgrade your side to a large or family size."
-    },
-    {
-      "trigger": "combo_includes_medium_drink",
-      "suggestion": "Upgrade your drink to a large size."
-    },
-    {
-      "trigger": "multiple_items_added",
-      "suggestion": "Consider a Family Deal for better value!"
-    },
-    {
-      "trigger": "order_chicken_sandwich",
-      "suggestion": "Try the Spicy KFC Classic Chicken Sandwich!"
+      "trigger": "Ordering a Classic Chicken Sandwich",
+      "suggestion": "Try our Spicy Chicken Sandwich for an extra kick!"
     }
   ],
   "time_based_rules": []

@@ -17,10 +17,25 @@ _current_session: contextvars.ContextVar[tuple[str, str] | None] = contextvars.C
     "brew_session", default=None
 )
 
+# Restaurant identity per run_live() task (enables simultaneous multi-restaurant sessions).
+_current_restaurant_ctx: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "restaurant_for_session", default=None
+)
+
 
 def set_current_session(user_id: str, session_id: str) -> None:
     """Set session identity for the current async context (call from WebSocket handler before run_live)."""
     _current_session.set((user_id, session_id))
+
+
+def set_current_restaurant(restaurant_id: str) -> None:
+    """Pin this async context to a specific restaurant's prompt and menu.
+    Must be called from within the WebSocket downstream_task before run_live().
+    """
+    import menu as _menu_module
+    _current_restaurant_ctx.set(restaurant_id)
+    # Also set the contextvar in the menu module so get_system_prompt reads the right files.
+    _menu_module._current_restaurant.set(restaurant_id)
 
 
 def clear_current_session() -> None:

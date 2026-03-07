@@ -26,7 +26,7 @@ from google.adk.runners import Runner
 from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
-from agent import root_agent, set_current_session
+from agent import root_agent, set_current_session, set_current_restaurant
 from order_state import (
     get_order_state,
     register_order_state,
@@ -107,9 +107,10 @@ runner = Runner(
 )
 
 
-@app.websocket("/ws/{user_id}/{session_id}")
+@app.websocket("/ws/{restaurant_id}/{user_id}/{session_id}")
 async def websocket_endpoint(
     websocket: WebSocket,
+    restaurant_id: str,
     user_id: str,
     session_id: str,
 ) -> None:
@@ -181,6 +182,10 @@ async def websocket_endpoint(
 
         async def downstream_task() -> None:
             set_current_session(user_id, session_id)
+            # Scope this async task's prompt to the requested restaurant
+            # ('brew' or empty string falls back to Brew's default files)
+            if restaurant_id and restaurant_id != "brew":
+                set_current_restaurant(restaurant_id)
             last_order_snapshot: list | None = None
             last_menu_context: str | None = None
             try:
