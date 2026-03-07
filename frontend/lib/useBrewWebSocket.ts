@@ -45,6 +45,7 @@ export function useBrewWebSocket({
   const wsRef = useRef<WebSocket | null>(null);
   const dispatchRef = useRef(dispatch);
   const onAudioChunkRef = useRef(onAudioChunk);
+  const realtimeInputBlockedRef = useRef(false);
   dispatchRef.current = dispatch;
   onAudioChunkRef.current = onAudioChunk;
 
@@ -64,6 +65,7 @@ export function useBrewWebSocket({
     wsRef.current = ws;
 
     ws.onopen = () => {
+      realtimeInputBlockedRef.current = false;
       dispatchRef.current({ type: "CONNECTION", status: "open" });
       dispatchRef.current({ type: "MODE", mode: "listening" });
     };
@@ -76,6 +78,7 @@ export function useBrewWebSocket({
     };
     ws.onclose = () => {
       wsRef.current = null;
+      realtimeInputBlockedRef.current = false;
       dispatchRef.current({ type: "CONNECTION", status: "idle" });
       dispatchRef.current({ type: "MODE", mode: "idle" });
     };
@@ -93,6 +96,10 @@ export function useBrewWebSocket({
         }
         if (msg.type === "error") {
           d({ type: "ERROR", message: msg.message || msg.code || "Error" });
+          return;
+        }
+        if (msg.type === "realtime_input_gate") {
+          realtimeInputBlockedRef.current = Boolean(msg.blocked);
           return;
         }
         if (msg.interrupted) {
@@ -127,7 +134,10 @@ export function useBrewWebSocket({
   }, [connect, user_id, session_id, disconnect]);
 
   const sendAudio = useCallback((chunk: ArrayBuffer) => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
+    if (
+      wsRef.current?.readyState === WebSocket.OPEN &&
+      !realtimeInputBlockedRef.current
+    ) {
       wsRef.current.send(chunk);
     }
   }, []);
@@ -139,7 +149,10 @@ export function useBrewWebSocket({
   }, []);
 
   const sendTurnComplete = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) {
+    if (
+      wsRef.current?.readyState === WebSocket.OPEN &&
+      !realtimeInputBlockedRef.current
+    ) {
       wsRef.current.send(JSON.stringify({ type: "turn_complete" }));
     }
   }, []);

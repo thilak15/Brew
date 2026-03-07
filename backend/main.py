@@ -112,6 +112,10 @@ async def websocket_endpoint(
         if not existing._items:  # Empty cart — try to restore
             await restore_order_state(user_id, session_id)
     live_request_queue: LiveRequestQueue | None = None
+    # Community-observed Live API behavior: while a tool call is pending, sending
+    # realtime input can intermittently trigger 1008 closes. Gate realtime input
+    # until matching function_response arrives.
+    tool_gate: dict[str, object] = {"pending": False, "ids": set()}
 
     try:
         session = await session_service.get_session(
@@ -138,6 +142,7 @@ async def websocket_endpoint(
         live_request_queue = LiveRequestQueue()
 
         async def upstream_task() -> None:
+            dropped_audio_chunks = 0
             try:
                 while True:
                     try:
@@ -148,6 +153,15 @@ async def websocket_endpoint(
                         # e.g. "Cannot call receive once a disconnect message has been received" on reload
                         break
                     if "bytes" in raw and raw["bytes"]:
+                        if bool(tool_gate["pending"]):
+                            dropped_audio_chunks += 1
+                            # Avoid log spam while still surfacing sustained drops.
+                            if dropped_audio_chunks % 200 == 0:
+                                logger.debug(
+                                    "Dropped %s audio chunks while tool call pending.",
+                                    dropped_audio_chunks,
+                                )
+                            continue
                         blob = types.Blob(
                             mime_type="audio/pcm;rate=16000",
                             data=raw["bytes"],
@@ -158,6 +172,9 @@ async def websocket_endpoint(
                             msg = json.loads(raw["text"])
                             
                             if msg.get("type") == "turn_complete":
+                                if bool(tool_gate["pending"]):
+                                    logger.debug("Ignored turn_complete while tool call pending.")
+                                    continue
                                 live_request_queue.send_activity_end()
                                 continue
                                 
@@ -178,6 +195,7 @@ async def websocket_endpoint(
             set_current_session(user_id, session_id)
             last_order_snapshot: list | None = None
             last_menu_context: str | None = None
+            last_tool_gate_state = False
             try:
                 async for event in runner.run_live(
                     user_id=user_id,
@@ -187,6 +205,75 @@ async def websocket_endpoint(
                 ):
                     if websocket.client_state.name != "CONNECTED":
                         break
+
+                    # Keep realtime-input gate in sync with function call lifecycle.
+                    has_function_call = False
+                    has_function_response = False
+                    function_call_ids: set[str] = set()
+                    function_response_ids: set[str] = set()
+                    if event.content and event.content.parts:
+                        for p in event.content.parts:
+                            fc = getattr(p, "function_call", None)
+                            fr = getattr(p, "function_response", None)
+                            if fc is not None:
+                                has_function_call = True
+                                fc_id = getattr(fc, "id", None)
+                                if fc_id:
+                                    function_call_ids.add(fc_id)
+                            if fr is not None:
+                                has_function_response = True
+                                fr_id = getattr(fr, "id", None)
+                                if fr_id:
+                                    function_response_ids.add(fr_id)
+
+                    if has_function_call:
+                        tool_gate["pending"] = True
+                        ids = tool_gate["ids"]
+                        if isinstance(ids, set):
+                            ids.update(function_call_ids)
+
+                    if has_function_response:
+                        ids = tool_gate["ids"]
+                        if isinstance(ids, set):
+                            if function_response_ids:
+                                ids.difference_update(function_response_ids)
+                            else:
+                                # Some SDK versions may omit ids on function_response parts.
+                                ids.clear()
+                            if not ids:
+                                tool_gate["pending"] = False
+                        else:
+                            tool_gate["pending"] = False
+
+                    # If a tool call is cancelled due to interruption, release gate.
+                    tool_call_cancellation = getattr(event, "tool_call_cancellation", None)
+                    if tool_call_cancellation is not None:
+                        cancel_ids = getattr(tool_call_cancellation, "ids", None) or []
+                        ids = tool_gate["ids"]
+                        if isinstance(ids, set):
+                            if cancel_ids:
+                                ids.difference_update(cancel_ids)
+                            else:
+                                ids.clear()
+                            if not ids:
+                                tool_gate["pending"] = False
+                        else:
+                            tool_gate["pending"] = False
+
+                    # Tell frontend when realtime-input gate flips state so it can stop
+                    # sending audio/activity frames immediately.
+                    is_tool_gate_active = bool(tool_gate["pending"]) or bool(tool_gate["ids"])
+                    if is_tool_gate_active != last_tool_gate_state:
+                        last_tool_gate_state = is_tool_gate_active
+                        await websocket.send_text(
+                            json.dumps(
+                                {
+                                    "type": "realtime_input_gate",
+                                    "blocked": is_tool_gate_active,
+                                }
+                            )
+                        )
+
                     if event.error_code:
                         await websocket.send_text(
                             json.dumps(
