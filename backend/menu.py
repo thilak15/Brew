@@ -14,10 +14,22 @@ def _load_menu() -> dict:
 
 
 def get_system_prompt() -> str:
-    """Build strict system instruction with full menu so the model only uses valid items."""
+    """Build strict system instruction with full menu so the model only uses valid items.
+    
+    Auto-selects the prompt file based on BREW_AGENT_MODEL:
+      - 09-2025 model → system_prompt_09.md (tuned for native-audio 09-2025 quirks)
+      - all other models → system_prompt.md (original stable prompt)
+    """
+    import os
     menu = _load_menu()
     
-    prompt_path = Path(__file__).resolve().parent / "system_prompt.md"
+    model = os.environ.get("BREW_AGENT_MODEL", "")
+    if "09-2025" in model:
+        prompt_file = "system_prompt_09.md"
+    else:
+        prompt_file = "system_prompt.md"
+    
+    prompt_path = Path(__file__).resolve().parent / prompt_file
     with open(prompt_path, encoding="utf-8") as f:
         prompt_template = f.read().strip()
         
