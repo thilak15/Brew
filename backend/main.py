@@ -282,6 +282,12 @@ async def websocket_endpoint(
                             )
                         )
 
+                    if getattr(event, "interrupted", False):
+                        logger.debug("Barge-in detected: sending interrupt signal to clear frontend audio buffer.")
+                        await websocket.send_text(
+                            json.dumps({"type": "interrupted", "interrupted": True})
+                        )
+
                     if event.error_code:
                         logger.warning("Live API error: code=%s message=%s", event.error_code, event.error_message or "")
                         await websocket.send_text(

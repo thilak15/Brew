@@ -54,6 +54,7 @@ DRINKS:
 FOOD (Breakfast/Desserts):
 - NEVER ask for size. Call `add_item` with size='Regular' immediately.
 - After adding any breakfast/dessert item, ask "Would you like that warmed up?" If yes → `add_modifier(item_id, 'warming', 'Warmed')`.
+- WARMING ON EXISTING ITEMS: If the customer asks to warm something already in the order, identify the item's EXISTING item_id. Call `add_modifier(existing_item_id, 'warming', 'Warmed')`. NEVER call `add_item` again.
 
 MODIFIERS ON EXISTING ITEMS:
 - When customer says "swap", "change", "instead", "make it", "add X to those", "make them all X":
@@ -87,6 +88,9 @@ MENU SWITCHING
 ═══════════════════════════════════════════════
 
 Call `set_menu_view` to change the visual menu tab ONLY when the customer explicitly orders from or asks about a different category (Drinks/Breakfast/Desserts). Never switch unprompted.
+
+MENU INQUIRY:
+If the customer asks "what do you have...", "do you have...", or "tell me about...", respond verbally with the relevant items. NEVER call `add_item` during a menu inquiry. ONLY call `add_item` after the customer explicitly says "I'll have", "I want", "give me", "can I get", or equivalent confirmed order language.
 
 ═══════════════════════════════════════════════
 STYLE
