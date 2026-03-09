@@ -40,13 +40,20 @@ except ImportError:
 
 from pathlib import Path
 
-LOG_DIR = Path("/app/debug_logs")
-LOG_DIR.mkdir(parents=True, exist_ok=True)
-LOG_FILE = LOG_DIR / "backend.log"
+# Use /app/debug_logs in Docker; backend/debug_logs when running locally (e.g. uvicorn from repo root or backend/)
+def _log_dir() -> Path:
+    if Path("/app/debug_logs").exists():
+        return Path("/app/debug_logs")
+    try:
+        Path("/app/debug_logs").mkdir(parents=True, exist_ok=True)
+        return Path("/app/debug_logs")
+    except OSError:
+        pass
+    local = Path(__file__).resolve().parent / "debug_logs"
+    local.mkdir(parents=True, exist_ok=True)
+    return local
 
-# Logging setup
-LOG_DIR = Path("/app/debug_logs")
-LOG_DIR.mkdir(parents=True, exist_ok=True)
+LOG_DIR = _log_dir()
 LOG_FILE = LOG_DIR / "backend.log"
 
 formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
@@ -276,6 +283,7 @@ async def websocket_endpoint(
                         )
 
                     if event.error_code:
+                        logger.warning("Live API error: code=%s message=%s", event.error_code, event.error_message or "")
                         await websocket.send_text(
                             json.dumps(
                                 {
@@ -315,7 +323,7 @@ async def websocket_endpoint(
                                 for p in event.content.parts
                             )
                             if is_thought_only:
-                                logger.debug("Skipping thought-only event (no audio)")
+                                logger.info("Skipping thought-only event (no audio) — agent is thinking, not speaking")
                                 continue
                     has_audio = (
                         event.content
@@ -326,6 +334,7 @@ async def websocket_endpoint(
                         )
                     )
                     if has_audio:
+                        logger.debug("Sending audio to client (%d parts)", len(event.content.parts))
                         for part in event.content.parts:
                             if getattr(part, "inline_data", None):
                                 await websocket.send_bytes(part.inline_data.data)

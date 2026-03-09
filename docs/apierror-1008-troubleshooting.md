@@ -160,6 +160,55 @@ Look for:
 - bad: repeated `1011 Deadline expired` without graceful recovery
 - good: stable turns, normal tool calls, predictable session closes and reconnects
 
+## When the agent goes silent (local or Docker)
+
+If the agent stops speaking mid-order, check backend logs to see why.
+
+### Where logs are written
+
+- **Local run** (e.g. `cd backend && uvicorn main:app --port 8000`): `backend/debug_logs/backend.log` (and stdout).
+- **Docker Compose:** `./debug_logs/backend.log` (mounted from container `/app/debug_logs`).
+
+### What to look for
+
+1. **Thought-only events** — Model is “thinking” but not producing audio; we skip those so the client doesn’t get empty content.  
+   - Log: `Skipping thought-only event (no audio) — agent is thinking, not speaking`  
+   - If you see many of these in a row, the model may be stuck in a long chain of thought. Try speaking again or a shorter prompt.
+
+2. **Live API error** — Connection or server error; client should show an error.  
+   - Log: `Live API error: code=... message=...`  
+   - Codes 1008 / 1011: see the rest of this doc and the tool-call gating workaround.
+
+3. **Downstream task exception** — The event loop crashed (e.g. after 1011).  
+   - Log: `Downstream task: ...`  
+   - Restart the backend and try again.
+
+4. **Tool gate** — Audio from the client is dropped while a tool call is pending. That doesn’t by itself make the *agent* silent; if the model never gets a tool response (bug or timeout), it might not speak.  
+   - Log: `Dropped ... audio chunks while tool call pending`  
+   - Check that tool calls complete (e.g. `TOOL SUCCESS` in logs from `agent.py`).
+
+### Common cause: client closed before agent finished speaking
+
+If the log shows **`connection closed`** (uvicorn) and then **right after** the backend receives a `server_content` message with **audio** from the model, the client (browser) disconnected before the agent’s response was sent. So the user never hears that last phrase — it “went silent” because the connection was already closed. Typical causes:
+
+- User clicked **“Pull Forward”** (or closed the tab) before the agent finished the final readback (“You can pull up to the window!”).
+- Network drop or frontend error closing the WebSocket.
+
+**Mitigation:** Avoid closing the WebSocket as soon as the user taps “Pull Forward.” For example: wait for `turnComplete` or add a short delay so the last agent audio can be sent and played, or show “Agent is finishing up…” and disable the button until the current turn is complete.
+
+### Quick commands
+
+```bash
+# Local: tail backend log
+tail -f backend/debug_logs/backend.log
+
+# Docker Compose: tail backend log (log file can be large; use tail -n to limit)
+tail -n 5000 debug_logs/backend.log | grep -E "Skipping thought-only|Live API error|Downstream task|connection closed|TOOL CALL|TOOL SUCCESS|CLOSE"
+
+# Grep for silence-related lines (on a recent slice to avoid slow full-file grep)
+tail -n 10000 debug_logs/backend.log | grep -E "Skipping thought-only|Live API error|Downstream task|Dropped.*audio chunks|TOOL CALL|TOOL SUCCESS"
+```
+
 ## References
 
 - Gemini Live API overview:
