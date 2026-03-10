@@ -9,7 +9,7 @@ import os
 import contextvars
 from google.adk.agents import Agent
 
-from menu import get_system_prompt, get_item_base_price, get_modifier_price_impact, get_item_category
+from menu import get_system_prompt, get_item_details, is_valid_modifier, get_item_base_price, get_modifier_price_impact, get_item_category
 from order_state import get_order_state
 
 # Session identity for the current run_live() task; set in main.py before run_live().
@@ -44,32 +44,48 @@ logger = logging.getLogger(__name__)
 def add_item(name: str, size: str, warmed: bool = False) -> str:
     """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'. If the customer asks to warm up a food item, pass warmed=True."""
     logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}', warmed={warmed})")
+    
+    item_details = get_item_details(name)
+    if not item_details:
+        logger.warning(f"⚠️ TOOL WARNING: '{name}' is not on the menu.")
+        return f'{{"status": "error", "message": "Item {name} is not on the menu. Ask the customer to clarify."}}'
+        
+    allowed_sizes = [s.lower() for s in item_details.get("sizes", [])]
+    if size.lower() not in allowed_sizes:
+        logger.warning(f"⚠️ TOOL WARNING: Size '{size}' is invalid for {name}.")
+        return f'{{"status": "error", "message": "Invalid size {size} for {name}. Allowed: {allowed_sizes}. Ask the customer to clarify."}}'
+
     state = _state()
     if not state:
         logger.error("❌ TOOL CALL FAILED: No active order session.")
         return "No active order session."
-    base_price = get_item_base_price(name)
-    item_id = state.add_item(name, size=size, base_price=base_price, warmed=warmed)
+        
+    base_price = float(item_details.get("base_price", 0.0))
+    real_name = item_details["name"]
+    item_id = state.add_item(real_name, size=size.title(), base_price=base_price, warmed=warmed)
     # Auto-switch menu view to the category of the added item
-    category = get_item_category(name)
+    category = get_item_category(real_name)
     if category and getattr(state, 'menu_context', None) != category:
         state.menu_context = category
-        logger.info(f"🔄 AUTO-SWITCH: Menu view → {category} (triggered by adding {name})")
-    logger.info(f"✅ TOOL SUCCESS: Added item {item_id} | {size} {name}")
-    return f"{{'status': 'success', 'action': 'added_item', 'name': '{name}', 'size': '{size}', 'item_id': '{item_id}'}}"
+        logger.info(f"🔄 AUTO-SWITCH: Menu view → {category} (triggered by adding {real_name})")
+    logger.info(f"✅ TOOL SUCCESS: Added item {item_id} | {size} {real_name}")
+    return f'{{"status": "success", "action": "added_item", "name": "{real_name}", "size": "{size}", "item_id": "{item_id}"}}'
 
 
-def remove_item(item_id: str) -> str:
-    """Remove an item from the order by its item id."""
-    logger.info(f"👉 TOOL CALL: remove_item(item_id='{item_id}')")
+def remove_item_by_description(name: str, size: str = "") -> str:
+    """Remove an item from the order by its name. Use exact menu names if possible (e.g. 'Iced Latte', 'Egg Bites'). If the item has a size (like Grande), provide it."""
+    logger.info(f"👉 TOOL CALL: remove_item_by_description(name='{name}', size='{size}')")
     state = _state()
     if not state:
         return "No active order session."
-    if state.remove_item(item_id):
-        logger.info(f"✅ TOOL SUCCESS: Removed item {item_id}")
-        return f"{{'status': 'success', 'action': 'removed_item', 'item_id': '{item_id}'}}"
-    logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
-    return f"{{'status': 'error', 'message': 'Item {item_id} not found.'}}"
+        
+    success, message = state.remove_item_by_description(name, size)
+    if success:
+        logger.info(f"✅ TOOL SUCCESS: {message}")
+        return f'{{"status": "success", "action": "removed_item", "message": "{message}"}}'
+        
+    logger.error(f"❌ TOOL CALL FAILED: {message}")
+    return f'{{"status": "error", "message": "{message}"}}'
 
 
 def add_modifier(
@@ -86,6 +102,11 @@ def add_modifier(
         qty_int = 1
         
     logger.info(f"👉 TOOL CALL: add_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
+    
+    if not is_valid_modifier(modifier_type, value):
+        logger.warning(f"⚠️ TOOL WARNING: Invalid modifier {modifier_type}={value}.")
+        return f'{{"status": "error", "message": "Modifier {value} is not a valid option for {modifier_type}. Check menu."}}'
+
     state = _state()
     if not state:
         return "No active order session."
@@ -124,6 +145,11 @@ def set_modifier(
         qty_int = 1
         
     logger.info(f"👉 TOOL CALL: set_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
+    
+    if not is_valid_modifier(modifier_type, value):
+        logger.warning(f"⚠️ TOOL WARNING: Invalid modifier {modifier_type}={value}.")
+        return f'{{"status": "error", "message": "Modifier {value} is not a valid option for {modifier_type}. Check menu."}}'
+
     state = _state()
     if not state:
         return "No active order session."
@@ -235,7 +261,7 @@ root_agent = Agent(
     instruction=get_system_prompt(),
     tools=[
         add_item,
-        remove_item,
+        remove_item_by_description,
         add_modifier,
         remove_modifier,
         set_modifier,

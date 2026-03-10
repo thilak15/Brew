@@ -58,6 +58,16 @@ def get_menu_dict() -> dict:
     return _load_menu()
 
 
+def get_item_details(name: str) -> dict | None:
+    """Return the full item dictionary if found by name, else None."""
+    menu = _load_menu()
+    for category in ["drinks", "breakfast", "desserts"]:
+        for item in menu.get(category, []):
+            if item["name"].lower() == name.lower():
+                return item
+    return None
+
+
 def get_item_base_price(name: str) -> float:
     """Return base price for an item (drink/food) by name, or 0.0 if not found."""
     menu = _load_menu()
@@ -89,3 +99,15 @@ def get_modifier_price_impact(modifier_type: str) -> float:
     if modifier_type in mods:
         return float(mods[modifier_type].get("default_price_impact", 0))
     return 0.0
+
+
+def is_valid_modifier(modifier_type: str, value: str) -> bool:
+    """Check if the modifier type and value are valid according to the menu."""
+    if modifier_type == "warming" and value.lower() == "warmed":
+        return True
+    menu = _load_menu()
+    mods = menu.get("modifiers", {})
+    if modifier_type not in mods:
+        return False
+    options = [o.lower() for o in mods[modifier_type].get("options", [])]
+    return value.lower() in options

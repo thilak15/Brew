@@ -59,6 +59,7 @@ class OrderState:
         self._history: list[list[dict[str, Any]]] = []
         self.menu_context: str = "Drinks"
         self._session_key = session_key  # used as Firestore doc ID
+        self._last_add_call = {"time": 0.0, "name": "", "size": "", "count": 0}
 
     def _fire_and_forget_sync(self) -> None:
         """Schedule a Firestore write without blocking the calling coroutine."""
@@ -110,8 +111,22 @@ class OrderState:
         self._next_id += 1
         return item_id
 
-    def add_item(self, name: str, size: str | None = None, base_price: float = 0.0, warmed: bool = False) -> str:
-        """Add a beverage or food item. Returns the new item id."""
+    def add_item(self, name: str, size: str | None = None, base_price: float = 0.0, warmed: bool = False) -> str | None:
+        """Add a beverage or food item. Returns the new item id, or None if blocked by loop guard."""
+        import time
+        now = time.time()
+        
+        # Idempotency guard: Prevent infinite tool-calling loops (cap at 3 identical adds per 2 seconds)
+        if (self._last_add_call["name"] == name and 
+            self._last_add_call["size"] == size and 
+            now - self._last_add_call["time"] < 2.0):
+            self._last_add_call["count"] += 1
+            if self._last_add_call["count"] > 3:
+                logger.warning(f"🛒 ORDER_STATE: Loop guard prevented adding more than 3 {size} {name}s")
+                return None
+        else:
+            self._last_add_call = {"time": now, "name": name, "size": size, "count": 1}
+
         self._push_history()
         item_id = self._generate_id()
         display_name = f"{name}" + (f" ({size})" if size else "")
@@ -146,6 +161,55 @@ class OrderState:
                 return True
         logger.warning(f"🛒 ORDER_STATE: Attempted to remove non-existent item [ID: {item_id}]")
         return False
+
+    def remove_item_by_description(self, name: str, size: str = "") -> tuple[bool, str]:
+        """
+        Removes an item matching name and size using fuzzy search logic.
+        Returns (success_bool, status_message_for_llm).
+        """
+        self._push_history()
+        matches = []
+        name_lower = name.lower()
+        size_lower = size.lower() if size else ""
+        
+        for i, item in enumerate(self._items):
+            base_name = item.get("base_name", "").lower()
+            item_size = item.get("size", "").lower()
+            
+            # Fuzzy match the name
+            if name_lower in base_name or base_name in name_lower:
+                if not size_lower or size_lower == item_size:
+                    matches.append((i, item))
+                    
+        if not matches:
+            return False, f"Could not find any item matching '{name}' in the order."
+            
+        if len(matches) > 1:
+            # Check if all matches are identical (same base_name and size)
+            first_match = matches[0][1]
+            all_identical = all(
+                m[1].get("base_name") == first_match.get("base_name") and 
+                m[1].get("size") == first_match.get("size") 
+                for m in matches
+            )
+            if all_identical:
+                # Remove the most recently added one
+                pop_idx = matches[-1][0]
+                removed = self._items.pop(pop_idx)
+                logger.info(f"🛒 ORDER_STATE: Removed duplicate item {removed['name']} via fuzzy match.")
+                self._fire_and_forget_sync()
+                return True, f"Removed 1 {removed['name']} from the order."
+            else:
+                # Ambiguous
+                options = [f"{m[1].get('size')} {m[1].get('base_name')}" for m in matches]
+                return False, f"Multiple different items match '{name}': {', '.join(options)}. Please ask the customer to clarify which one to remove."
+                
+        # Exactly one match
+        pop_idx = matches[0][0]
+        removed = self._items.pop(pop_idx)
+        logger.info(f"🛒 ORDER_STATE: Removed item {removed['name']} via fuzzy match.")
+        self._fire_and_forget_sync()
+        return True, f"Removed {removed['name']} from the order."
 
     def _find_item(self, item_id: str) -> dict[str, Any] | None:
         for item in self._items:
