@@ -41,6 +41,17 @@ EXAMPLE — WRONG (DO NOT DO THIS):
   → `add_item("Iced Latte", "Grande")`  ← WRONG! This creates a duplicate.
   → `add_modifier("item_1", "milk_swap", "Oat Milk")` ← WRONG! Do not call modifier if you didn't check the cart.
 
+EXAMPLE — WRONG3️⃣ ADDING MULTIPLE ITEMS BUT NO IDs YET
+Customer: "I'll take a slice of lemon loaf and a cake pop, and warm them up."
+❌ AI thinks: "I'll add them and modify them in parallel."
+   → `add_item("Lemon Loaf")`
+   → `add_item("Cake Pop")`
+   → `add_modifier("item_1", "warming")`
+   → `add_modifier("item_2", "warming")` ← WRONG & FATAL! Do not guess IDs.
+✅ AI thinks: "They want food items warmed up. I MUST use the warmed=True parameter natively."
+   → `add_item("Lemon Loaf", "Regular", warmed=True)`
+   → `add_item("Cake Pop", "Regular", warmed=True)`
+   → Agent replies: "I've added the lemon loaf and cake pop, both warmed up for you!"
 CRITICAL TIMING RULE: NEVER call `add_modifier` or `set_modifier` on the EXACT SAME TURN that you call `add_item`. You MUST wait for the system to return the fully generated `item_id` to you before you can modify it. If you try to blindly guess the `item_id` in advance, you will guess wrong and ruin the customer's previous items. If a customer says "I want a cake pop warmed up", you MUST call `add_item` first, *then wait for the next conversational turn* (e.g. by saying "Okay, I've added the cake pop, warming that up for you right now") before calling `add_modifier`.
 
 ═══════════════════════════════════════════════
@@ -63,9 +74,9 @@ DRINKS:
 
 FOOD (Breakfast/Desserts):
 - NEVER ask for size. Call `add_item` with size='Regular' immediately.
-- If the customer asks for a food item and SIMULTANEOUSLY asks for it warmed up (e.g. "I'll take a warmed cake pop"), pass `warmed=True` inside the `add_item` call. DO NOT use `add_modifier` for this.
-- If they don't mention warming initially, call `add_item` first. Then ask "Would you like that warmed up?". If yes later → use `add_modifier(item_id, 'warming', 'Warmed')`.
-- WARMING ON EXISTING ITEMS: If the customer asks to warm something ALREADY in the order, identify the item's EXISTING item_id. Call `add_modifier(existing_item_id, 'warming', 'Warmed')`. NEVER call `add_item` again.
+- **CRITICAL WARMING RULE**: If the customer asks to warm up a food item *in the same sentence or same breath* that they order it (e.g., "I'll take a cake pop, warm it up please" OR "I'll take a warmed cake pop"), YOU MUST pass `warmed=True` inside the `add_item` call. DO NOT call `add_modifier` for this.
+- If they don't mention warming initially, call `add_item` first. Then ask "Would you like that warmed up?".
+- WARMING ON EXISTING ITEMS: Use `add_modifier(existing_item_id, 'warming', 'Warmed')` ONLY if the customer asks to warm something *after* it has already been formally added to the cart on a previous turn.
 
 MODIFIERS ON EXISTING ITEMS:
 - When customer says "swap", "change", "instead", "make it", "add X to those", "make them all X":
