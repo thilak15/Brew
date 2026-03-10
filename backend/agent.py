@@ -78,7 +78,7 @@ def add_modifier(
     value: str,
     quantity: str = "1",
 ) -> str:
-    """Add a modifier to an item. modifier_type: one of syrup, milk_swap, topping, ice_level. value: exact name from menu (e.g. 'Oat Milk', 'SF Vanilla', 'Matcha Cold Foam'). quantity: number of pumps/scoops (pass as a string, e.g. '1', '2')."""
+    """Add a modifier to an item. modifier_type: one of syrup, milk_swap, topping, ice_level, warming. value: exact name from menu (e.g. 'Oat Milk', 'SF Vanilla', 'Matcha Cold Foam'). quantity: number of pumps/scoops (pass as a string, e.g. '1', '2')."""
     
     try:
         qty_int = int(quantity)
@@ -98,7 +98,7 @@ def add_modifier(
 
 
 def remove_modifier(item_id: str, modifier_type: str, value: str) -> str:
-    """Remove a modifier from an item. E.g. remove_modifier(item_id, 'milk_swap', 'Oat Milk')."""
+    """Remove a modifier from an item. modifier_type: one of syrup, milk_swap, topping, ice_level, warming. E.g. remove_modifier(item_id, 'milk_swap', 'Oat Milk')."""
     logger.info(f"👉 TOOL CALL: remove_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}')")
     state = _state()
     if not state:
@@ -116,7 +116,7 @@ def set_modifier(
     value: str,
     quantity: str = "1",
 ) -> str:
-    """Replace all modifiers of this type with one value. Use for 'instead of X I want Y' (e.g. set milk_swap to 'Whole Milk'). quantity: pass as string numeral (e.g. '1')."""
+    """Replace all modifiers of this type with one value. modifier_type: one of syrup, milk_swap, topping, ice_level, warming. Use for 'instead of X I want Y' (e.g. set milk_swap to 'Whole Milk'). quantity: pass as string numeral (e.g. '1')."""
     
     try:
         qty_int = int(quantity)
