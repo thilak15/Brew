@@ -8,6 +8,8 @@ import hark from 'hark';
 
 const TARGET_SAMPLE_RATE = 16000;
 
+export let isUserSpeaking = false;
+
 export async function startMicCapture(
   onChunk: (buffer: ArrayBuffer) => void,
   onSpeechEnd?: () => void
@@ -18,7 +20,13 @@ export async function startMicCapture(
 
   // Set up hark for VAD
   const speechEvents = hark(stream, { interval: 100, threshold: -50, play: false });
+  speechEvents.on('speaking', () => {
+    isUserSpeaking = true;
+    // Immediately cut off local playback when user starts talking (barge-in latency fix)
+    interruptAudioPlayback();
+  });
   speechEvents.on('stopped_speaking', () => {
+    isUserSpeaking = false;
     onSpeechEnd?.();
   });
 
@@ -154,6 +162,9 @@ export function prepareAudioPlayback(): void {
 }
 
 export function playAudioChunk(int16Data: ArrayBuffer): void {
+  // Drop lagging network audio chunks if the user is currently speaking
+  if (isUserSpeaking) return;
+
   if (playbackQueue.length === 0) prepareAudioPlayback();
   playbackQueue.push(int16Data);
   playNextInQueue();
