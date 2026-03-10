@@ -41,15 +41,15 @@ def _state():
 import logging
 logger = logging.getLogger(__name__)
 
-def add_item(name: str, size: str) -> str:
-    """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'."""
-    logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}')")
+def add_item(name: str, size: str, warmed: bool = False) -> str:
+    """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'. If the customer asks to warm up a food item, pass warmed=True."""
+    logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}', warmed={warmed})")
     state = _state()
     if not state:
         logger.error("❌ TOOL CALL FAILED: No active order session.")
         return "No active order session."
     base_price = get_item_base_price(name)
-    item_id = state.add_item(name, size=size, base_price=base_price)
+    item_id = state.add_item(name, size=size, base_price=base_price, warmed=warmed)
     # Auto-switch menu view to the category of the added item
     category = get_item_category(name)
     if category and getattr(state, 'menu_context', None) != category:

@@ -110,8 +110,8 @@ class OrderState:
         self._next_id += 1
         return item_id
 
-    def add_item(self, name: str, size: str | None = None, base_price: float = 0.0) -> str:
-        """Add a beverage. Returns the new item id."""
+    def add_item(self, name: str, size: str | None = None, base_price: float = 0.0, warmed: bool = False) -> str:
+        """Add a beverage or food item. Returns the new item id."""
         self._push_history()
         item_id = self._generate_id()
         display_name = f"{name}" + (f" ({size})" if size else "")
@@ -125,6 +125,12 @@ class OrderState:
         })
         logger.info(f"🛒 ORDER_STATE: Added item {name} (Size: {size}) [ID: {item_id}]")
         logger.info(f"🛒 ORDER_STATE CURRENT ITEMS: {[i['name'] for i in self._items]}")
+        
+        if warmed:
+            from menu import get_modifier_price_impact
+            price_impact = get_modifier_price_impact("warming")
+            self.add_modifier(item_id, "warming", "Warmed", price_impact=price_impact, quantity=1)
+            
         self._fire_and_forget_sync()
         return item_id
 
