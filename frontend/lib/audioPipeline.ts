@@ -19,7 +19,7 @@ export async function startMicCapture(
   const source = ctx.createMediaStreamSource(stream);
 
   // Set up hark for VAD
-  const speechEvents = hark(stream, { interval: 100, threshold: -50, play: false });
+  const speechEvents = hark(stream, { interval: 100, threshold: -35, play: false });
   speechEvents.on('speaking', () => {
     isUserSpeaking = true;
     // Immediately cut off local playback when user starts talking (barge-in latency fix)
