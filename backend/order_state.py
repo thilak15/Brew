@@ -24,7 +24,9 @@ _CART_COLLECTION = "brew_carts"
 
 
 def _new_id() -> str:
-    return f"item_{uuid.uuid4().hex[:12]}"
+    # Deprecated: UUIDs cause audio models to hallucinate IDs.
+    # Now handled internally by OrderState._generate_id()
+    pass
 
 
 def _get_firestore():
@@ -90,10 +92,28 @@ class OrderState:
         if len(self._history) > self.MAX_HISTORY:
             self._history.pop(0)
 
+    def _generate_id(self) -> str:
+        if not hasattr(self, '_next_id'):
+            self._next_id = 1
+            if self._items:
+                max_id = 0
+                for item in self._items:
+                    if str(item.get("id", "")).startswith("item_"):
+                        try:
+                            num = int(item["id"].split("_")[-1])
+                            if num > max_id:
+                                max_id = num
+                        except ValueError:
+                            pass
+                self._next_id = max_id + 1
+        item_id = f"item_{self._next_id}"
+        self._next_id += 1
+        return item_id
+
     def add_item(self, name: str, size: str | None = None, base_price: float = 0.0) -> str:
         """Add a beverage. Returns the new item id."""
         self._push_history()
-        item_id = _new_id()
+        item_id = self._generate_id()
         display_name = f"{name}" + (f" ({size})" if size else "")
         self._items.append({
             "id": item_id,
