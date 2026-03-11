@@ -1,6 +1,7 @@
 fastapi>=0.115.0
 uvicorn[standard]>=0.32.0
 google-adk>=1.10.0
+google-genai>=1.14.0,<1.66.0
 python-dotenv>=1.0.0
 websockets>=14.0
 google-cloud-firestore>=2.19.0

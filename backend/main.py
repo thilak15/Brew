@@ -263,6 +263,10 @@ async def websocket_endpoint(
             transient_retry_count = 0
             current_turn: dict | None = None
 
+            live_session_start: float = time.monotonic()
+            total_events_received: int = 0
+            last_event_summary: str = "(none)"
+
             async def _reset_live_stream(reason: str) -> None:
                 nonlocal last_tool_gate_state, current_turn
                 if current_turn:
@@ -301,9 +305,24 @@ async def websocket_endpoint(
                             run_config=run_config,
                         ):
                             saw_event = True
+                            total_events_received += 1
                             transient_retry_count = 0
                             if websocket.client_state.name != "CONNECTED":
                                 break
+
+                            evt_parts_summary = ""
+                            if event.content and event.content.parts:
+                                evt_parts_summary = ",".join(
+                                    "audio" if getattr(p, "inline_data", None)
+                                    else "fc" if getattr(p, "function_call", None)
+                                    else "fr" if getattr(p, "function_response", None)
+                                    else "thought" if getattr(p, "thought", False)
+                                    else "text"
+                                    for p in event.content.parts
+                                )
+                            tc = "tc" if getattr(event, "turn_complete", False) else ""
+                            err = f"err={event.error_code}" if event.error_code else ""
+                            last_event_summary = "|".join(filter(None, [evt_parts_summary, tc, err]))
 
                             has_function_call = False
                             has_function_response = False
@@ -388,9 +407,24 @@ async def websocket_endpoint(
 
                             if event.error_code:
                                 code = str(event.error_code)
-                                logger.warning("Live API error: code=%s message=%s", code, event.error_message or "")
+                                elapsed_s = time.monotonic() - live_session_start
+                                logger.warning(
+                                    "DIAG Live API error: code=%s message=%s | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                                    code, event.error_message or "",
+                                    elapsed_s, total_events_received, last_event_summary,
+                                    session_id, connection_id,
+                                )
                                 await websocket.send_text(
-                                    json.dumps({"type": "error", "code": code, "message": event.error_message or ""})
+                                    json.dumps({
+                                        "type": "error",
+                                        "code": code,
+                                        "message": event.error_message or "",
+                                        "diag": {
+                                            "elapsed_s": round(elapsed_s, 1),
+                                            "total_events": total_events_received,
+                                            "last_event": last_event_summary,
+                                        },
+                                    })
                                 )
                                 if code in {"1008", "1011"}:
                                     raise RuntimeError(f"Transient live API error code={code}")
@@ -460,12 +494,27 @@ async def websocket_endpoint(
                         if websocket.client_state.name != "CONNECTED":
                             break
 
+                        elapsed_s = time.monotonic() - live_session_start
                         transient_retry_count += 1
                         if transient_retry_count > MAX_TRANSIENT_LIVE_RETRIES:
-                            logger.error("Live stream ended repeatedly; giving up after %s retries.", transient_retry_count)
+                            logger.error(
+                                "DIAG Live stream ended repeatedly; giving up after %s retries | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                                transient_retry_count,
+                                elapsed_s, total_events_received, last_event_summary,
+                                session_id, connection_id,
+                            )
                             break
                         backoff_s = min(5.0, 0.5 * (2 ** (transient_retry_count - 1)))
+                        logger.warning(
+                            "DIAG Live stream ended silently; retrying in %.1fs (attempt %s) | elapsed=%.1fs events=%d saw_event=%s last_event=[%s] session=%s conn=%s",
+                            backoff_s, transient_retry_count,
+                            elapsed_s, total_events_received, saw_event, last_event_summary,
+                            session_id, connection_id,
+                        )
                         await _reset_live_stream(f"stream_end attempt={transient_retry_count}")
+                        live_session_start = time.monotonic()
+                        total_events_received = 0
+                        last_event_summary = "(reset)"
                         await asyncio.sleep(backoff_s)
 
                     except asyncio.CancelledError:
@@ -473,19 +522,45 @@ async def websocket_endpoint(
                     except Exception as e:
                         if websocket.client_state.name != "CONNECTED":
                             break
+                        elapsed_s = time.monotonic() - live_session_start
                         if _is_transient_live_exception(e):
                             transient_retry_count += 1
                             if transient_retry_count > MAX_TRANSIENT_LIVE_RETRIES:
-                                logger.error("Live stream unavailable after %s retries: %s", transient_retry_count, e)
+                                logger.error(
+                                    "DIAG Live stream gave up after %s retries: %s(%s) | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                                    transient_retry_count, type(e).__name__, e,
+                                    elapsed_s, total_events_received, last_event_summary,
+                                    session_id, connection_id,
+                                )
                                 break
                             backoff_s = min(5.0, 0.5 * (2 ** (transient_retry_count - 1)))
-                            logger.warning("Transient live stream error; retrying in %.1fs (attempt %s): %s", backoff_s, transient_retry_count, e)
+                            logger.warning(
+                                "DIAG Transient error; retrying in %.1fs (attempt %s): %s(%s) | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                                backoff_s, transient_retry_count, type(e).__name__, e,
+                                elapsed_s, total_events_received, last_event_summary,
+                                session_id, connection_id,
+                            )
                             await _reset_live_stream(f"exception attempt={transient_retry_count}")
+                            live_session_start = time.monotonic()
+                            total_events_received = 0
+                            last_event_summary = "(reset)"
                             await asyncio.sleep(backoff_s)
                             continue
+                        logger.error(
+                            "DIAG Non-transient exception: %s(%s) | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                            type(e).__name__, e,
+                            elapsed_s, total_events_received, last_event_summary,
+                            session_id, connection_id,
+                        )
                         raise
             except Exception as e:
-                logger.warning("Downstream task: %s", e)
+                elapsed_s = time.monotonic() - live_session_start
+                logger.warning(
+                    "DIAG Downstream task ended: %s(%s) | elapsed=%.1fs events=%d last_event=[%s] session=%s conn=%s",
+                    type(e).__name__, e,
+                    elapsed_s, total_events_received, last_event_summary,
+                    session_id, connection_id,
+                )
 
         await asyncio.gather(
             upstream_task(),
