@@ -146,6 +146,7 @@ async def websocket_endpoint(
     live_queue_ref: dict[str, LiveRequestQueue | None] = {"queue": None}
     tool_gate: dict[str, object] = {"pending": False, "ids": set()}
 
+
     turn_counter = {"next": 1}
 
     def _log_turn(turn: dict, reason: str) -> None:
@@ -278,7 +279,8 @@ async def websocket_endpoint(
                         old_queue.close()
                     except Exception:
                         pass
-                live_queue_ref["queue"] = LiveRequestQueue()
+                new_queue = LiveRequestQueue()
+                live_queue_ref["queue"] = new_queue
                 tool_gate["pending"] = False
                 ids = tool_gate.get("ids")
                 if isinstance(ids, set):
@@ -288,6 +290,41 @@ async def websocket_endpoint(
                     await websocket.send_text(
                         json.dumps({"type": "realtime_input_gate", "blocked": False})
                     )
+
+                order = get_order_state(user_id, session_id)
+                if order:
+                    items = order.snapshot()
+                    if items:
+                        item_lines = []
+                        for it in items:
+                            mods = [m.get("name", "") for m in it.get("modifiers", [])]
+                            mod_str = f" (with {', '.join(mods)})" if mods else ""
+                            item_lines.append(f"- {it.get('name')} {it.get('size', '')}{mod_str}")
+                        ctx = (
+                            "[SYSTEM OVERRIDE — DO NOT GREET] "
+                            "You are mid-conversation with a customer. "
+                            "You have ALREADY greeted them. Do NOT say 'Hi' or 'Welcome to Brew' again. "
+                            "Their current order so far:\n"
+                            + "\n".join(item_lines)
+                            + "\nSay something brief like 'Alright, what else can I add?' or "
+                            "'Sure thing, anything else?' and continue taking their order."
+                        )
+                    else:
+                        ctx = (
+                            "[SYSTEM OVERRIDE — DO NOT GREET] "
+                            "You are mid-conversation with a customer. "
+                            "You have ALREADY greeted them. Do NOT say 'Hi' or 'Welcome to Brew' again. "
+                            "The customer's cart is empty so far. "
+                            "Say something brief like 'What can I get for you?' and continue."
+                        )
+                    try:
+                        new_queue.send_content(
+                            types.Content(parts=[types.Part(text=ctx)])
+                        )
+                        logger.info("Injected order context after reset (%d items)", len(items))
+                    except Exception:
+                        pass
+
                 logger.warning("Live stream reset: %s", reason)
 
             try:
