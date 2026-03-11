@@ -89,11 +89,12 @@ if not any(
 logger = logging.getLogger(__name__)
 
 MAX_TRANSIENT_LIVE_RETRIES = 8
+PROACTIVE_RECONNECT_S = 8 * 60  # reconnect before the 10-min hard limit
 
 
 def _is_transient_live_exception(exc: Exception) -> bool:
     text = str(exc).lower()
-    return any(h in text for h in ("1008", "1011", "service is currently unavailable", "deadline expired", "connection is closed", "connection closed"))
+    return any(h in text for h in ("1007", "1008", "1011", "service is currently unavailable", "deadline expired", "invalid argument", "connection is closed", "connection closed"))
 
 
 # Increase verbosity specifically for the agent frameworks
@@ -463,7 +464,7 @@ async def websocket_endpoint(
                                         },
                                     })
                                 )
-                                if code in {"1008", "1011"}:
+                                if code in {"1007", "1008", "1011"}:
                                     raise RuntimeError(f"Transient live API error code={code}")
                                 continue
 
@@ -528,8 +529,25 @@ async def websocket_endpoint(
                                 _log_turn(current_turn, "turn_complete")
                                 current_turn = None
 
+                            if turn_complete_flag and not bool(tool_gate["pending"]):
+                                elapsed_s = time.monotonic() - live_session_start
+                                if elapsed_s >= PROACTIVE_RECONNECT_S:
+                                    logger.info(
+                                        "Proactive reconnect at %.0fs (limit %ds) session=%s conn=%s",
+                                        elapsed_s, PROACTIVE_RECONNECT_S, session_id, connection_id,
+                                    )
+                                    await _reset_live_stream("proactive_timer")
+                                    live_session_start = time.monotonic()
+                                    total_events_received = 0
+                                    last_event_summary = "(proactive_reset)"
+                                    transient_retry_count = 0
+                                    break
+
                         if websocket.client_state.name != "CONNECTED":
                             break
+
+                        if last_event_summary == "(proactive_reset)":
+                            continue
 
                         elapsed_s = time.monotonic() - live_session_start
                         transient_retry_count += 1

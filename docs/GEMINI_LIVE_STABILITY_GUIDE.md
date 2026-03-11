@@ -10,17 +10,19 @@
 1. [Architecture Overview](#1-architecture-overview)
 2. [Error 1008 — Policy Violation](#2-error-1008--policy-violation)
 3. [Error 1011 — Deadline Expired / Internal Error](#3-error-1011--deadline-expired--internal-error)
-4. [The Tool Gate — Preventing 1008 During Tool Calls](#4-the-tool-gate--preventing-1008-during-tool-calls)
-5. [The Thought-State Race Condition — Why 1008 Still Happens](#5-the-thought-state-race-condition--why-1008-still-happens)
-6. [Reconnection & Context Recovery](#6-reconnection--context-recovery)
-7. [Order State Persistence Across Reconnects](#7-order-state-persistence-across-reconnects)
-8. [Audio Replay — Attempted and Removed](#8-audio-replay--attempted-and-removed)
-9. [Diagnostic Logging System](#9-diagnostic-logging-system)
-10. [Approaches Considered](#10-approaches-considered)
-11. [Current Architecture (Final)](#11-current-architecture-final)
-12. [Known Limitations](#12-known-limitations)
-13. [Timeline of Changes](#13-timeline-of-changes)
-14. [References](#14-references)
+4. [Error 1007 — Invalid Frame Payload](#4-error-1007--invalid-frame-payload)
+5. [The Tool Gate — Preventing 1008 During Tool Calls](#5-the-tool-gate--preventing-1008-during-tool-calls)
+6. [The Thought-State Race Condition — Why 1008 Still Happens](#6-the-thought-state-race-condition--why-1008-still-happens)
+7. [Reconnection & Context Recovery](#7-reconnection--context-recovery)
+8. [Proactive Reconnect Timer — Preventing 1011](#8-proactive-reconnect-timer--preventing-1011)
+9. [Order State Persistence Across Reconnects](#9-order-state-persistence-across-reconnects)
+10. [Audio Replay — Attempted and Removed](#10-audio-replay--attempted-and-removed)
+11. [Diagnostic Logging System](#11-diagnostic-logging-system)
+12. [Approaches Considered](#12-approaches-considered)
+13. [Current Architecture (Final)](#13-current-architecture-final)
+14. [Known Limitations](#14-known-limitations)
+15. [Timeline of Changes](#15-timeline-of-changes)
+16. [References](#16-references)
 
 ---
 
@@ -141,7 +143,43 @@ This means when a 1011 occurs at the 10-minute mark, we cannot transparently res
 
 ---
 
-## 4. The Tool Gate — Preventing 1008 During Tool Calls
+## 4. Error 1007 — Invalid Frame Payload
+
+### What It Is
+
+```
+websockets.exceptions.ConnectionClosedError: received 1007 (invalid frame payload data)
+  Request contains an invalid argument.
+google.genai.errors.APIError: 1007 None. Request contains an invalid argument.
+```
+
+WebSocket close code **1007** means the server received a frame with invalid payload data. In the Gemini Live API context, this typically means the client sent a malformed or unsupported request.
+
+### Known Causes
+
+| Cause | Details |
+|-------|---------|
+| **Transcription config on unsupported model** | Enabling `input_audio_transcription` or `output_audio_transcription` on models that don't support it triggers 1007 |
+| **Malformed audio blob** | Sending audio with wrong MIME type or corrupted data |
+| **Unsupported API features** | Requesting features the model doesn't implement |
+
+### Our Handling
+
+We disabled transcription config in `RunConfig` to avoid the most common 1007 trigger:
+
+```python
+run_config = RunConfig(
+    streaming_mode=StreamingMode.BIDI,
+    input_audio_transcription=None,
+    output_audio_transcription=None,
+)
+```
+
+The 1007 is also treated as a transient error and triggers the same retry + context injection flow as 1008 and 1011.
+
+---
+
+## 5. The Tool Gate — Preventing 1008 During Tool Calls
 
 ### What It Does
 
@@ -213,7 +251,7 @@ The tool gate activates when a `function_call` event arrives. But the 1008 can h
 
 ---
 
-## 5. The Thought-State Race Condition — Why 1008 Still Happens
+## 6. The Thought-State Race Condition — Why 1008 Still Happens
 
 ### The Gap
 
@@ -238,7 +276,7 @@ Since we can't prevent the 1008 during the thought-to-function_call gap, we **ac
 
 ---
 
-## 6. Reconnection & Context Recovery
+## 7. Reconnection & Context Recovery
 
 ### The Retry Loop
 
@@ -325,7 +363,55 @@ The `[SYSTEM OVERRIDE — DO NOT GREET]` prefix in the context injection is a st
 
 ---
 
-## 7. Order State Persistence Across Reconnects
+## 8. Proactive Reconnect Timer — Preventing 1011
+
+### The Problem
+
+The Gemini Live API enforces a **hard 10-minute connection limit**. If a session runs past 10 minutes (e.g., a long order, or the user stays connected after completing their order), the server kills the WebSocket with a 1011 error.
+
+### The Solution
+
+We proactively reset the Gemini live stream **every 8 minutes**, 2 minutes before the hard limit. The reset happens at a natural pause point (after a `turn_complete` event when no tool calls are pending), so the user doesn't notice.
+
+### How It Works
+
+```python
+PROACTIVE_RECONNECT_S = 8 * 60  # 480 seconds
+
+# Inside the event loop, after each turn_complete:
+if turn_complete_flag and not bool(tool_gate["pending"]):
+    elapsed_s = time.monotonic() - live_session_start
+    if elapsed_s >= PROACTIVE_RECONNECT_S:
+        await _reset_live_stream("proactive_timer")
+        live_session_start = time.monotonic()
+        # ... reset counters, continue to new run_live()
+```
+
+### Timing
+
+```
+0 min          4 min          8 min          10 min
+  │──────────────│──────────────│                │
+  │   Normal operation          │                │
+  │                             │                │
+  │                      turn_complete ──► proactive reset
+  │                             │         (context injected)
+  │                             │                │
+  │                             │──── new session │──── ...
+  │                                              │
+  │                                    (never reaches 10-min wall)
+```
+
+### Key Design Decisions
+
+- **Only on `turn_complete`**: We never interrupt the model mid-response. The reset waits for a natural pause.
+- **Not during tool calls**: If a tool call is pending, we wait for it to complete before resetting.
+- **No backoff sleep**: Unlike error-triggered retries, proactive resets reconnect immediately (no 0.5s+ delay).
+- **Counter reset**: The transient retry counter is reset to 0, so the proactive reconnect doesn't count against the retry limit.
+
+---
+
+## 9. Order State Persistence Across Reconnects
 
 ### Why the Order Is Never Lost
 
@@ -390,7 +476,7 @@ if not existing._items:
 
 ---
 
-## 8. Audio Replay — Attempted and Removed
+## 10. Audio Replay — Attempted and Removed
 
 ### What We Tried
 
@@ -427,7 +513,7 @@ No audio replay. Only text-based context injection of the current cart state. Th
 
 ---
 
-## 9. Diagnostic Logging System
+## 11. Diagnostic Logging System
 
 ### What We Added
 
@@ -491,7 +577,7 @@ This allows post-mortem analysis of every interaction: what tools were called, h
 
 ---
 
-## 10. Approaches Considered
+## 12. Approaches Considered
 
 ### Approach 1: Thought Gate (Rejected)
 
@@ -532,7 +618,7 @@ This allows post-mortem analysis of every interaction: what tools were called, h
 
 ---
 
-## 11. Current Architecture (Final)
+## 13. Current Architecture (Final)
 
 ### Error Handling Flow
 
@@ -543,40 +629,39 @@ This allows post-mortem analysis of every interaction: what tools were called, h
                           │  Tool calls working  │
                           └──────────┬──────────┘
                                      │
-                              1008 or 1011
-                                     │
-                                     ▼
-                          ┌─────────────────────┐
-                          │ _is_transient?       │
-                          │ Yes → retry          │
-                          │ No  → raise          │
-                          └──────────┬──────────┘
-                                     │ Yes
-                                     ▼
-                          ┌─────────────────────┐
-                          │ _reset_live_stream() │
-                          │                     │
-                          │ 1. Close old queue   │
-                          │ 2. Create new queue  │
-                          │ 3. Clear tool gate   │
-                          │ 4. Unblock frontend  │
-                          │ 5. Read OrderState   │
-                          │ 6. Inject cart text  │
-                          │    with NO-GREET     │
-                          └──────────┬──────────┘
-                                     │
-                                     ▼
-                          ┌─────────────────────┐
-                          │ Backoff sleep        │
-                          │ 0.5s → 1s → 2s → 5s │
-                          └──────────┬──────────┘
-                                     │
-                                     ▼
-                          ┌─────────────────────┐
-                          │ New run_live()       │
-                          │ Model sees context   │
-                          │ Continues order      │
-                          └─────────────────────┘
+                    ┌────────────────┼────────────────┐
+                    │                │                │
+             turn_complete     1007/1008/1011    10-min limit
+             at 8+ minutes    (race condition)   (if timer
+             (proactive)       (reactive)        missed)
+                    │                │                │
+                    ▼                ▼                ▼
+              ┌───────────┐  ┌─────────────────┐
+              │ No backoff │  │ Backoff sleep   │
+              │ Immediate  │  │ 0.5s→1s→2s→5s  │
+              └─────┬──────┘  └───────┬─────────┘
+                    │                 │
+                    └────────┬────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │ _reset_live_stream() │
+                  │                     │
+                  │ 1. Close old queue   │
+                  │ 2. Create new queue  │
+                  │ 3. Clear tool gate   │
+                  │ 4. Unblock frontend  │
+                  │ 5. Read OrderState   │
+                  │ 6. Inject cart text  │
+                  │    with NO-GREET     │
+                  └──────────┬──────────┘
+                             │
+                             ▼
+                  ┌─────────────────────┐
+                  │ New run_live()       │
+                  │ Model sees context   │
+                  │ Continues order      │
+                  └─────────────────────┘
 ```
 
 ### What Persists Across Reconnects
@@ -603,7 +688,7 @@ The frontend does receive `{"type": "error", "code": "1008", ...}` but currently
 
 ---
 
-## 12. Known Limitations
+## 14. Known Limitations
 
 ### 1. The Thought-State Gap Is Unavoidable
 
@@ -620,9 +705,9 @@ After reconnect, the model only knows the current cart contents. It does not kno
 - Any preferences mentioned (e.g., "I'm vegan")
 - The tone/flow of the conversation
 
-### 4. 10-Minute Hard Limit
+### 4. 10-Minute Hard Limit (Mitigated)
 
-Long ordering sessions will hit the 10-minute wall. The retry mechanism handles this, but the model loses all conversation context each time. For very long sessions, this could happen multiple times.
+The proactive reconnect timer resets the session every 8 minutes, preventing the 10-minute wall. However, each reset still loses conversation context (only cart state is preserved). For very long sessions, this happens multiple times.
 
 ### 5. No Frontend Auto-Reconnect
 
@@ -630,7 +715,7 @@ If the backend WebSocket itself drops (not just the Gemini stream), the frontend
 
 ---
 
-## 13. Timeline of Changes
+## 15. Timeline of Changes
 
 | Date | Change | Reason |
 |------|--------|--------|
@@ -644,10 +729,12 @@ If the backend WebSocket itself drops (not just the Gemini stream), the frontend
 | 2026-03-11 | Removed audio replay entirely | Caused latency + model confusion + re-greeting |
 | 2026-03-11 | Added `[SYSTEM OVERRIDE — DO NOT GREET]` to context injection | Prevent model from re-greeting after reconnect |
 | 2026-03-11 | Cleaned up unused `collections` import and `audio_ring` code | Code hygiene |
+| 2026-03-11 | Added 1007 (invalid argument) to transient error handling | Handle malformed frame errors gracefully |
+| 2026-03-11 | Implemented proactive reconnect timer (8 min) | Prevent 10-minute hard session limit from killing sessions |
 
 ---
 
-## 14. References
+## 16. References
 
 | Source | URL | Key Finding |
 |--------|-----|-------------|
