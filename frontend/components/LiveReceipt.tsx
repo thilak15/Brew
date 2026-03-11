@@ -9,6 +9,22 @@ type LiveReceiptProps = {
 
 export function LiveReceipt({ items }: LiveReceiptProps) {
   const total = orderTotal(items);
+  const modifierLabel = (type: string) => {
+    switch (type) {
+      case "milk_swap":
+        return "Milk";
+      case "ice_level":
+        return "Ice";
+      case "syrup":
+        return "Syrup";
+      case "topping":
+        return "Topping";
+      case "warming":
+        return "Warming";
+      default:
+        return type.replace(/_/g, " ");
+    }
+  };
 
   return (
     <div className="flex flex-col h-full p-6 bg-white relative">
@@ -37,7 +53,7 @@ export function LiveReceipt({ items }: LiveReceiptProps) {
                     <li key={i} className="flex justify-between items-center text-sm text-[#8D7B68] bg-white/50 px-2 py-1 rounded-lg">
                       <span className="flex items-center gap-2">
                         <span className="text-xs">↳</span>
-                        {m.type}: <strong>{m.quantity && m.quantity > 1 ? `${m.quantity}x ` : ""}{m.name}</strong>
+                        {modifierLabel(m.type)}: <strong>{m.quantity && m.quantity > 1 ? `${m.quantity}x ` : ""}{m.name}</strong>
                       </span>
                       {m.price_impact ? <span className="text-xs font-semibold">+${(m.price_impact * (m.quantity || 1)).toFixed(2)}</span> : null}
                     </li>

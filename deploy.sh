@@ -177,7 +177,7 @@ gcloud run deploy brew-backend \
   --region "$REGION" \
   --port 8000 \
   --allow-unauthenticated \
-  --set-env-vars "GOOGLE_API_KEY=$API_KEY,GOOGLE_GENAI_USE_VERTEXAI=FALSE" \
+  --set-env-vars "GOOGLE_API_KEY=$API_KEY,GOOGLE_GENAI_USE_VERTEXAI=FALSE,BREW_AGENT_MODEL=gemini-2.5-flash-native-audio-preview-12-2025" \
   --memory 512Mi \
   --timeout 300 \
   --session-affinity \

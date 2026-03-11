@@ -41,6 +41,36 @@ def _state():
 import logging
 logger = logging.getLogger(__name__)
 
+
+def _normalize_item_id(item_id: str) -> str:
+    """Accept shorthand numeric ids from model and normalize to item_* format."""
+    raw = (item_id or "").strip()
+    if not raw:
+        return raw
+    if raw.startswith("item_"):
+        return raw
+    if raw.isdigit():
+        return f"item_{raw}"
+    return raw
+
+
+def _resolve_item_id(state, item_id: str) -> str:
+    """Resolve model-provided ids robustly (canonical, numeric shorthand, positional)."""
+    normalized = _normalize_item_id(item_id)
+    if not state:
+        return normalized
+    items = state.snapshot()
+    if any(str(it.get("id", "")) == normalized for it in items):
+        return normalized
+    raw = (item_id or "").strip()
+    if raw.isdigit():
+        idx = int(raw) - 1
+        if 0 <= idx < len(items):
+            candidate = str(items[idx].get("id", "")).strip()
+            if candidate:
+                return candidate
+    return normalized
+
 def add_item(name: str, size: str, warmed: bool = False) -> str:
     """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'. If the customer asks to warm up a food item, pass warmed=True."""
     logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}', warmed={warmed})")
@@ -72,20 +102,32 @@ def add_item(name: str, size: str, warmed: bool = False) -> str:
     return f'{{"status": "success", "action": "added_item", "name": "{real_name}", "size": "{size}", "item_id": "{item_id}"}}'
 
 
-def remove_item_by_description(name: str, size: str = "") -> str:
-    """Remove an item from the order by its name. Use exact menu names if possible (e.g. 'Iced Latte', 'Egg Bites'). If the item has a size (like Grande), provide it."""
-    logger.info(f"👉 TOOL CALL: remove_item_by_description(name='{name}', size='{size}')")
+def remove_item(item_id: str = "", name: str = "", size: str = "") -> str:
+    """Remove an item from the order. Prefer item_id for deterministic removal. If item_id is unavailable, pass name (and optional size) for fuzzy matching."""
+    logger.info(f"👉 TOOL CALL: remove_item(item_id='{item_id}', name='{name}', size='{size}')")
     state = _state()
     if not state:
         return "No active order session."
-        
+    if item_id:
+        resolved = _resolve_item_id(state, item_id)
+        if state.remove_item(resolved):
+            logger.info(f"✅ TOOL SUCCESS: Removed item {resolved}")
+            return f'{{"status": "success", "action": "removed_item", "item_id": "{resolved}"}}'
+        logger.error(f"❌ TOOL CALL FAILED: Item {resolved} not found.")
+        return f'{{"status": "error", "message": "Item {resolved} not found."}}'
+    if not name:
+        return '{"status": "error", "message": "Provide item_id (preferred) or name to remove an item."}'
     success, message = state.remove_item_by_description(name, size)
     if success:
         logger.info(f"✅ TOOL SUCCESS: {message}")
         return f'{{"status": "success", "action": "removed_item", "message": "{message}"}}'
-        
     logger.error(f"❌ TOOL CALL FAILED: {message}")
     return f'{{"status": "error", "message": "{message}"}}'
+
+
+def remove_item_by_description(name: str, size: str = "") -> str:
+    """Backward-compatible helper for older prompt variants."""
+    return remove_item(name=name, size=size)
 
 
 def add_modifier(
@@ -101,8 +143,6 @@ def add_modifier(
     except ValueError:
         qty_int = 1
         
-    logger.info(f"👉 TOOL CALL: add_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
-    
     if not is_valid_modifier(modifier_type, value):
         logger.warning(f"⚠️ TOOL WARNING: Invalid modifier {modifier_type}={value}.")
         return f'{{"status": "error", "message": "Modifier {value} is not a valid option for {modifier_type}. Check menu."}}'
@@ -110,21 +150,30 @@ def add_modifier(
     state = _state()
     if not state:
         return "No active order session."
+    resolved = _resolve_item_id(state, item_id)
+    logger.info(f"👉 TOOL CALL: add_modifier(item_id='{resolved}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
     price_impact = get_modifier_price_impact(modifier_type)
-    if state.add_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=qty_int):
-        logger.info(f"✅ TOOL SUCCESS: Added modifier {qty_int}x {value} to {item_id}")
-        return f"{{'status': 'success', 'action': 'added_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {qty_int}}}"
-    logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
-    return f"{{'status': 'error', 'message': 'Item {item_id} not found.'}}"
+    if modifier_type == "milk_swap":
+        if state.set_modifier(resolved, modifier_type, value, price_impact=price_impact, quantity=qty_int):
+            logger.info(f"✅ TOOL SUCCESS: Set milk swap {qty_int}x {value} on {resolved}")
+            return f"{{'status': 'success', 'action': 'set_modifier', 'item_id': '{resolved}', 'modifier': '{value}', 'qty': {qty_int}}}"
+        logger.error(f"❌ TOOL CALL FAILED: Item {resolved} not found.")
+        return f"{{'status': 'error', 'message': 'Item {resolved} not found.'}}"
+    if state.add_modifier(resolved, modifier_type, value, price_impact=price_impact, quantity=qty_int):
+        logger.info(f"✅ TOOL SUCCESS: Added modifier {qty_int}x {value} to {resolved}")
+        return f"{{'status': 'success', 'action': 'added_modifier', 'item_id': '{resolved}', 'modifier': '{value}', 'qty': {qty_int}}}"
+    logger.error(f"❌ TOOL CALL FAILED: Item {resolved} not found.")
+    return f"{{'status': 'error', 'message': 'Item {resolved} not found.'}}"
 
 
 def remove_modifier(item_id: str, modifier_type: str, value: str) -> str:
     """Remove a modifier from an item. modifier_type: one of syrup, milk_swap, topping, ice_level, warming. E.g. remove_modifier(item_id, 'milk_swap', 'Oat Milk')."""
-    logger.info(f"👉 TOOL CALL: remove_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}')")
     state = _state()
     if not state:
         return "No active order session."
-    if state.remove_modifier(item_id, modifier_type, value):
+    resolved = _resolve_item_id(state, item_id)
+    logger.info(f"👉 TOOL CALL: remove_modifier(item_id='{resolved}', modifier_type='{modifier_type}', value='{value}')")
+    if state.remove_modifier(resolved, modifier_type, value):
         logger.info(f"✅ TOOL SUCCESS: Removed modifier {value} from {item_id}")
         return f"{{'status': 'success', 'action': 'removed_modifier', 'item_id': '{item_id}', 'modifier': '{value}'}}"
     logger.error(f"❌ TOOL CALL FAILED: Modifier {value} or item {item_id} not found.")
@@ -144,8 +193,6 @@ def set_modifier(
     except ValueError:
         qty_int = 1
         
-    logger.info(f"👉 TOOL CALL: set_modifier(item_id='{item_id}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
-    
     if not is_valid_modifier(modifier_type, value):
         logger.warning(f"⚠️ TOOL WARNING: Invalid modifier {modifier_type}={value}.")
         return f'{{"status": "error", "message": "Modifier {value} is not a valid option for {modifier_type}. Check menu."}}'
@@ -153,8 +200,10 @@ def set_modifier(
     state = _state()
     if not state:
         return "No active order session."
+    resolved = _resolve_item_id(state, item_id)
+    logger.info(f"👉 TOOL CALL: set_modifier(item_id='{resolved}', modifier_type='{modifier_type}', value='{value}', quantity={qty_int})")
     price_impact = get_modifier_price_impact(modifier_type)
-    if state.set_modifier(item_id, modifier_type, value, price_impact=price_impact, quantity=qty_int):
+    if state.set_modifier(resolved, modifier_type, value, price_impact=price_impact, quantity=qty_int):
         logger.info(f"✅ TOOL SUCCESS: Set modifier {modifier_type} to {value} for {item_id}")
         return f"{{'status': 'success', 'action': 'set_modifier', 'item_id': '{item_id}', 'modifier': '{value}', 'qty': {qty_int}}}"
     logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
@@ -163,11 +212,12 @@ def set_modifier(
 
 def set_ice_level(item_id: str, level: str) -> str:
     """Set ice level for an item. level: one of Light, Normal, Extra, No Ice."""
-    logger.info(f"👉 TOOL CALL: set_ice_level(item_id='{item_id}', level='{level}')")
     state = _state()
     if not state:
         return "No active order session."
-    if state.set_ice_level(item_id, level):
+    resolved = _resolve_item_id(state, item_id)
+    logger.info(f"👉 TOOL CALL: set_ice_level(item_id='{resolved}', level='{level}')")
+    if state.set_ice_level(resolved, level):
         logger.info(f"✅ TOOL SUCCESS: Set ice level to {level} for {item_id}")
         return f"{{'status': 'success', 'action': 'set_ice_level', 'item_id': '{item_id}', 'level': '{level}'}}"
     logger.error(f"❌ TOOL CALL FAILED: Item {item_id} not found.")
@@ -261,6 +311,7 @@ root_agent = Agent(
     instruction=get_system_prompt(),
     tools=[
         add_item,
+        remove_item,
         remove_item_by_description,
         add_modifier,
         remove_modifier,

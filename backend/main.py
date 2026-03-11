@@ -17,6 +17,8 @@ warnings.filterwarnings(
 import json
 import logging
 import os
+import time
+import uuid
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from google.adk.agents.run_config import RunConfig, StreamingMode
@@ -26,6 +28,7 @@ from google.adk.sessions import InMemorySessionService
 from google.genai import types
 
 from agent import root_agent, set_current_session
+from menu import get_menu_dict
 from order_state import (
     get_order_state,
     register_order_state,
@@ -55,6 +58,7 @@ def _log_dir() -> Path:
 
 LOG_DIR = _log_dir()
 LOG_FILE = LOG_DIR / "backend.log"
+TURN_TRACE_FILE = LOG_DIR / "turn_trace.log"
 
 formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 file_handler = logging.FileHandler(LOG_FILE)
@@ -71,7 +75,26 @@ for logger_name in ["google.adk", "google.genai", "uvicorn", "uvicorn.access"]:
     l.setLevel(logging.DEBUG)
     l.addHandler(file_handler)
 
+turn_trace_logger = logging.getLogger("turn_trace")
+turn_trace_logger.setLevel(logging.INFO)
+turn_trace_logger.propagate = False
+if not any(
+    isinstance(h, logging.FileHandler) and Path(getattr(h, "baseFilename", "")) == TURN_TRACE_FILE
+    for h in turn_trace_logger.handlers
+):
+    _tth = logging.FileHandler(TURN_TRACE_FILE)
+    _tth.setFormatter(logging.Formatter("%(message)s"))
+    turn_trace_logger.addHandler(_tth)
+
 logger = logging.getLogger(__name__)
+
+MAX_TRANSIENT_LIVE_RETRIES = 8
+
+
+def _is_transient_live_exception(exc: Exception) -> bool:
+    text = str(exc).lower()
+    return any(h in text for h in ("1008", "1011", "service is currently unavailable", "deadline expired", "connection is closed", "connection closed"))
+
 
 # Increase verbosity specifically for the agent frameworks
 logging.getLogger("google.adk").setLevel(logging.DEBUG)
@@ -111,6 +134,7 @@ async def websocket_endpoint(
     session_id: str,
 ) -> None:
     await websocket.accept()
+    connection_id = f"ws_{uuid.uuid4().hex[:8]}"
     register_order_state(user_id, session_id)
     # If Firestore is enabled and this is a reconnect from a different instance,
     # restore the cart state from Firestore
@@ -119,10 +143,31 @@ async def websocket_endpoint(
         if not existing._items:  # Empty cart — try to restore
             await restore_order_state(user_id, session_id)
     live_request_queue: LiveRequestQueue | None = None
-    # Community-observed Live API behavior: while a tool call is pending, sending
-    # realtime input can intermittently trigger 1008 closes. Gate realtime input
-    # until matching function_response arrives.
+    live_queue_ref: dict[str, LiveRequestQueue | None] = {"queue": None}
     tool_gate: dict[str, object] = {"pending": False, "ids": set()}
+
+    turn_counter = {"next": 1}
+
+    def _log_turn(turn: dict, reason: str) -> None:
+        turn["reason"] = reason
+        turn["ended_at_ms"] = int(time.time() * 1000)
+        payload = json.dumps(turn, ensure_ascii=False, default=str)
+        logger.info("TURN_TRACE %s", payload)
+        turn_trace_logger.info(payload)
+
+    def _new_turn() -> dict:
+        tid = turn_counter["next"]
+        turn_counter["next"] = tid + 1
+        return {
+            "connection_id": connection_id,
+            "session_id": session_id,
+            "turn_id": tid,
+            "started_at_ms": int(time.time() * 1000),
+            "tool_calls": [],
+            "tool_responses": [],
+            "assistant_audio_events": 0,
+            "interrupted": False,
+        }
 
     try:
         session = await session_service.get_session(
@@ -147,6 +192,7 @@ async def websocket_endpoint(
             output_audio_transcription=None,
         )
         live_request_queue = LiveRequestQueue()
+        live_queue_ref["queue"] = live_request_queue
 
         async def upstream_task() -> None:
             dropped_audio_chunks = 0
@@ -157,12 +203,10 @@ async def websocket_endpoint(
                     except WebSocketDisconnect:
                         break
                     except Exception:
-                        # e.g. "Cannot call receive once a disconnect message has been received" on reload
                         break
                     if "bytes" in raw and raw["bytes"]:
                         if bool(tool_gate["pending"]):
                             dropped_audio_chunks += 1
-                            # Avoid log spam while still surfacing sustained drops.
                             if dropped_audio_chunks % 200 == 0:
                                 logger.debug(
                                     "Dropped %s audio chunks while tool call pending.",
@@ -173,29 +217,41 @@ async def websocket_endpoint(
                             mime_type="audio/pcm;rate=16000",
                             data=raw["bytes"],
                         )
-                        live_request_queue.send_realtime(blob)
+                        queue = live_queue_ref.get("queue")
+                        if queue is not None:
+                            try:
+                                queue.send_realtime(blob)
+                            except Exception:
+                                pass
                     elif "text" in raw and raw["text"]:
                         try:
                             msg = json.loads(raw["text"])
-                            
+
                             if msg.get("type") == "turn_complete":
                                 if bool(tool_gate["pending"]):
                                     logger.debug("Ignored turn_complete while tool call pending.")
-                                # Native-audio models (09-2025, 12-2025) use automatic
-                                # activity detection and reject explicit send_activity_end().
-                                # Simply skip — the server-side VAD will detect silence itself.
                                 continue
-                                
+
                             if msg.get("type") == "text" and "text" in msg:
                                 content = types.Content(
                                     parts=[types.Part(text=msg["text"])]
                                 )
-                                live_request_queue.send_content(content)
+                                queue = live_queue_ref.get("queue")
+                                if queue is not None:
+                                    try:
+                                        queue.send_content(content)
+                                    except Exception:
+                                        pass
                         except json.JSONDecodeError:
                             content = types.Content(
                                 parts=[types.Part(text=raw["text"])]
                             )
-                            live_request_queue.send_content(content)
+                            queue = live_queue_ref.get("queue")
+                            if queue is not None:
+                                try:
+                                    queue.send_content(content)
+                                except Exception:
+                                    pass
             except Exception as e:
                 logger.warning("Upstream task: %s", e)
 
@@ -204,162 +260,230 @@ async def websocket_endpoint(
             last_order_snapshot: list | None = None
             last_menu_context: str | None = None
             last_tool_gate_state = False
-            try:
-                async for event in runner.run_live(
-                    user_id=user_id,
-                    session_id=session_id,
-                    live_request_queue=live_request_queue,
-                    run_config=run_config,
-                ):
-                    if websocket.client_state.name != "CONNECTED":
-                        break
+            transient_retry_count = 0
+            current_turn: dict | None = None
 
-                    # Keep realtime-input gate in sync with function call lifecycle.
-                    has_function_call = False
-                    has_function_response = False
-                    function_call_ids: set[str] = set()
-                    function_response_ids: set[str] = set()
-                    if event.content and event.content.parts:
-                        for p in event.content.parts:
-                            fc = getattr(p, "function_call", None)
-                            fr = getattr(p, "function_response", None)
-                            if fc is not None:
-                                has_function_call = True
-                                fc_id = getattr(fc, "id", None)
-                                if fc_id:
-                                    function_call_ids.add(fc_id)
-                            if fr is not None:
-                                has_function_response = True
-                                fr_id = getattr(fr, "id", None)
-                                if fr_id:
-                                    function_response_ids.add(fr_id)
-
-                    if has_function_call:
-                        tool_gate["pending"] = True
-                        ids = tool_gate["ids"]
-                        if isinstance(ids, set):
-                            ids.update(function_call_ids)
-
-                    if has_function_response:
-                        ids = tool_gate["ids"]
-                        if isinstance(ids, set):
-                            if function_response_ids:
-                                ids.difference_update(function_response_ids)
-                            else:
-                                # Some SDK versions may omit ids on function_response parts.
-                                ids.clear()
-                            if not ids:
-                                tool_gate["pending"] = False
-                        else:
-                            tool_gate["pending"] = False
-
-                    # If a tool call is cancelled due to interruption, release gate.
-                    tool_call_cancellation = getattr(event, "tool_call_cancellation", None)
-                    if tool_call_cancellation is not None:
-                        cancel_ids = getattr(tool_call_cancellation, "ids", None) or []
-                        ids = tool_gate["ids"]
-                        if isinstance(ids, set):
-                            if cancel_ids:
-                                ids.difference_update(cancel_ids)
-                            else:
-                                ids.clear()
-                            if not ids:
-                                tool_gate["pending"] = False
-                        else:
-                            tool_gate["pending"] = False
-
-                    # Tell frontend when realtime-input gate flips state so it can stop
-                    # sending audio/activity frames immediately.
-                    is_tool_gate_active = bool(tool_gate["pending"]) or bool(tool_gate["ids"])
-                    if is_tool_gate_active != last_tool_gate_state:
-                        last_tool_gate_state = is_tool_gate_active
-                        await websocket.send_text(
-                            json.dumps(
-                                {
-                                    "type": "realtime_input_gate",
-                                    "blocked": is_tool_gate_active,
-                                }
-                            )
-                        )
-
-                    if getattr(event, "interrupted", False):
-                        logger.debug("Barge-in detected: sending interrupt signal to clear frontend audio buffer.")
-                        await websocket.send_text(
-                            json.dumps({"type": "interrupted", "interrupted": True})
-                        )
-
-                    if event.error_code:
-                        logger.warning("Live API error: code=%s message=%s", event.error_code, event.error_message or "")
-                        await websocket.send_text(
-                            json.dumps(
-                                {
-                                    "type": "error",
-                                    "code": event.error_code,
-                                    "message": event.error_message or "",
-                                }
-                            )
-                        )
-                        continue
-                    # ALWAYS check and send order state + menu context, even for thought events
-                    order = get_order_state(user_id, session_id)
-                    if order:
-                        current = order.snapshot()
-                        if current != last_order_snapshot:
-                            last_order_snapshot = current
-                            await websocket.send_text(
-                                json.dumps({"type": "order_state", "payload": current})
-                            )
-                        
-                        if getattr(order, 'menu_context', None) != last_menu_context:
-                            last_menu_context = order.menu_context
-                            await websocket.send_text(
-                                json.dumps({"type": "ui_context_change", "context": order.menu_context})
-                            )
-                    # Skip thought-only events (internal AI reasoning with no audio)
-                    # These cause silence because the frontend receives content but no audio to play.
-                    # NEVER skip events that contain function_call or function_response parts.
-                    if event.content and event.content.parts:
-                        has_function = any(
-                            getattr(p, 'function_call', None) or getattr(p, 'function_response', None)
-                            for p in event.content.parts
-                        )
-                        if not has_function:
-                            is_thought_only = all(
-                                getattr(p, 'thought', False) and not getattr(p, 'inline_data', None)
-                                for p in event.content.parts
-                            )
-                            if is_thought_only:
-                                logger.info("Skipping thought-only event (no audio) — agent is thinking, not speaking")
-                                continue
-                    has_audio = (
-                        event.content
-                        and event.content.parts
-                        and any(
-                            getattr(p, "inline_data", None)
-                            for p in event.content.parts
-                        )
+            async def _reset_live_stream(reason: str) -> None:
+                nonlocal last_tool_gate_state, current_turn
+                if current_turn:
+                    _log_turn(current_turn, f"live_stream_reset:{reason}")
+                    current_turn = None
+                old_queue = live_queue_ref.get("queue")
+                if old_queue is not None:
+                    try:
+                        old_queue.close()
+                    except Exception:
+                        pass
+                live_queue_ref["queue"] = LiveRequestQueue()
+                tool_gate["pending"] = False
+                ids = tool_gate.get("ids")
+                if isinstance(ids, set):
+                    ids.clear()
+                if last_tool_gate_state:
+                    last_tool_gate_state = False
+                    await websocket.send_text(
+                        json.dumps({"type": "realtime_input_gate", "blocked": False})
                     )
-                    if has_audio:
-                        logger.debug("Sending audio to client (%d parts)", len(event.content.parts))
-                        for part in event.content.parts:
-                            if getattr(part, "inline_data", None):
-                                await websocket.send_bytes(part.inline_data.data)
-                        meta = event.model_dump(
-                            exclude={"content": {"parts": {"__all__": {"inline_data"}}}},
-                            exclude_none=True,
-                            by_alias=True,
-                        )
-                        if "content" in meta and "parts" in meta["content"]:
-                            for p in meta["content"]["parts"]:
-                                p.pop("inlineData", None)
-                                p.pop("inline_data", None)
-                        await websocket.send_text(json.dumps(meta))
-                    else:
-                        await websocket.send_text(
-                            event.model_dump_json(exclude_none=True, by_alias=True)
-                        )
-            except asyncio.CancelledError:
-                pass
+                logger.warning("Live stream reset: %s", reason)
+
+            try:
+                while websocket.client_state.name == "CONNECTED":
+                    queue = live_queue_ref.get("queue")
+                    if queue is None:
+                        await asyncio.sleep(0.05)
+                        continue
+                    saw_event = False
+                    try:
+                        async for event in runner.run_live(
+                            user_id=user_id,
+                            session_id=session_id,
+                            live_request_queue=queue,
+                            run_config=run_config,
+                        ):
+                            saw_event = True
+                            transient_retry_count = 0
+                            if websocket.client_state.name != "CONNECTED":
+                                break
+
+                            has_function_call = False
+                            has_function_response = False
+                            function_call_ids: set[str] = set()
+                            function_response_ids: set[str] = set()
+                            if event.content and event.content.parts:
+                                for p in event.content.parts:
+                                    fc = getattr(p, "function_call", None)
+                                    fr = getattr(p, "function_response", None)
+                                    if fc is not None:
+                                        has_function_call = True
+                                        fc_id = getattr(fc, "id", None)
+                                        if fc_id:
+                                            function_call_ids.add(fc_id)
+                                        if current_turn is None:
+                                            current_turn = _new_turn()
+                                        current_turn["tool_calls"].append({
+                                            "id": str(fc_id or ""),
+                                            "name": str(getattr(fc, "name", "")),
+                                            "args": str(getattr(fc, "args", ""))[:200],
+                                        })
+                                    if fr is not None:
+                                        has_function_response = True
+                                        fr_id = getattr(fr, "id", None)
+                                        if fr_id:
+                                            function_response_ids.add(fr_id)
+                                        if current_turn is None:
+                                            current_turn = _new_turn()
+                                        current_turn["tool_responses"].append({
+                                            "id": str(fr_id or ""),
+                                            "name": str(getattr(fr, "name", "")),
+                                            "result": str(getattr(fr, "response", ""))[:200],
+                                        })
+
+                            if has_function_call:
+                                tool_gate["pending"] = True
+                                ids = tool_gate["ids"]
+                                if isinstance(ids, set):
+                                    ids.update(function_call_ids)
+
+                            if has_function_response:
+                                ids = tool_gate["ids"]
+                                if isinstance(ids, set):
+                                    if function_response_ids:
+                                        ids.difference_update(function_response_ids)
+                                    else:
+                                        ids.clear()
+                                    if not ids:
+                                        tool_gate["pending"] = False
+                                else:
+                                    tool_gate["pending"] = False
+
+                            tool_call_cancellation = getattr(event, "tool_call_cancellation", None)
+                            if tool_call_cancellation is not None:
+                                cancel_ids = getattr(tool_call_cancellation, "ids", None) or []
+                                ids = tool_gate["ids"]
+                                if isinstance(ids, set):
+                                    if cancel_ids:
+                                        ids.difference_update(cancel_ids)
+                                    else:
+                                        ids.clear()
+                                    if not ids:
+                                        tool_gate["pending"] = False
+                                else:
+                                    tool_gate["pending"] = False
+
+                            is_tool_gate_active = bool(tool_gate["pending"]) or bool(tool_gate["ids"])
+                            if is_tool_gate_active != last_tool_gate_state:
+                                last_tool_gate_state = is_tool_gate_active
+                                await websocket.send_text(
+                                    json.dumps({"type": "realtime_input_gate", "blocked": is_tool_gate_active})
+                                )
+
+                            if getattr(event, "interrupted", False):
+                                logger.debug("Barge-in detected: sending interrupt signal.")
+                                if current_turn is None:
+                                    current_turn = _new_turn()
+                                current_turn["interrupted"] = True
+                                await websocket.send_text(
+                                    json.dumps({"type": "interrupted", "interrupted": True})
+                                )
+
+                            if event.error_code:
+                                code = str(event.error_code)
+                                logger.warning("Live API error: code=%s message=%s", code, event.error_message or "")
+                                await websocket.send_text(
+                                    json.dumps({"type": "error", "code": code, "message": event.error_message or ""})
+                                )
+                                if code in {"1008", "1011"}:
+                                    raise RuntimeError(f"Transient live API error code={code}")
+                                continue
+
+                            order = get_order_state(user_id, session_id)
+                            if order:
+                                current = order.snapshot()
+                                if current != last_order_snapshot:
+                                    last_order_snapshot = current
+                                    await websocket.send_text(
+                                        json.dumps({"type": "order_state", "payload": current})
+                                    )
+                                if getattr(order, 'menu_context', None) != last_menu_context:
+                                    last_menu_context = order.menu_context
+                                    await websocket.send_text(
+                                        json.dumps({"type": "ui_context_change", "context": order.menu_context})
+                                    )
+
+                            if event.content and event.content.parts:
+                                has_function = any(
+                                    getattr(p, 'function_call', None) or getattr(p, 'function_response', None)
+                                    for p in event.content.parts
+                                )
+                                if not has_function:
+                                    is_thought_only = all(
+                                        getattr(p, 'thought', False) and not getattr(p, 'inline_data', None)
+                                        for p in event.content.parts
+                                    )
+                                    if is_thought_only:
+                                        continue
+
+                            has_audio = (
+                                event.content
+                                and event.content.parts
+                                and any(getattr(p, "inline_data", None) for p in event.content.parts)
+                            )
+
+                            turn_complete_flag = bool(getattr(event, "turn_complete", False))
+
+                            if has_audio:
+                                if current_turn is None:
+                                    current_turn = _new_turn()
+                                current_turn["assistant_audio_events"] += 1
+                                for part in event.content.parts:
+                                    if getattr(part, "inline_data", None):
+                                        await websocket.send_bytes(part.inline_data.data)
+                                meta = event.model_dump(
+                                    exclude={"content": {"parts": {"__all__": {"inline_data"}}}},
+                                    exclude_none=True,
+                                    by_alias=True,
+                                )
+                                if "content" in meta and "parts" in meta["content"]:
+                                    for p in meta["content"]["parts"]:
+                                        p.pop("inlineData", None)
+                                        p.pop("inline_data", None)
+                                await websocket.send_text(json.dumps(meta))
+                            else:
+                                await websocket.send_text(
+                                    event.model_dump_json(exclude_none=True, by_alias=True)
+                                )
+
+                            if turn_complete_flag and current_turn:
+                                _log_turn(current_turn, "turn_complete")
+                                current_turn = None
+
+                        if websocket.client_state.name != "CONNECTED":
+                            break
+
+                        transient_retry_count += 1
+                        if transient_retry_count > MAX_TRANSIENT_LIVE_RETRIES:
+                            logger.error("Live stream ended repeatedly; giving up after %s retries.", transient_retry_count)
+                            break
+                        backoff_s = min(5.0, 0.5 * (2 ** (transient_retry_count - 1)))
+                        await _reset_live_stream(f"stream_end attempt={transient_retry_count}")
+                        await asyncio.sleep(backoff_s)
+
+                    except asyncio.CancelledError:
+                        break
+                    except Exception as e:
+                        if websocket.client_state.name != "CONNECTED":
+                            break
+                        if _is_transient_live_exception(e):
+                            transient_retry_count += 1
+                            if transient_retry_count > MAX_TRANSIENT_LIVE_RETRIES:
+                                logger.error("Live stream unavailable after %s retries: %s", transient_retry_count, e)
+                                break
+                            backoff_s = min(5.0, 0.5 * (2 ** (transient_retry_count - 1)))
+                            logger.warning("Transient live stream error; retrying in %.1fs (attempt %s): %s", backoff_s, transient_retry_count, e)
+                            await _reset_live_stream(f"exception attempt={transient_retry_count}")
+                            await asyncio.sleep(backoff_s)
+                            continue
+                        raise
             except Exception as e:
                 logger.warning("Downstream task: %s", e)
 
@@ -369,12 +493,16 @@ async def websocket_endpoint(
             return_exceptions=True,
         )
     finally:
-        if live_request_queue is not None:
-            live_request_queue.close()
-        # Persist order state so it survives reconnects!
-        # unregister_order_state(user_id, session_id)
+        queue = live_queue_ref.get("queue")
+        if queue is not None:
+            queue.close()
 
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
+
+
+@app.get("/menu")
+def menu():
+    return get_menu_dict()

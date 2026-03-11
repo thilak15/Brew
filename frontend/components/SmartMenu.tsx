@@ -1,9 +1,21 @@
 "use client";
 
-import Image from "next/image";
 import { useState, useEffect } from "react";
+import { getApiBaseUrl } from "@/lib/backendUrl";
 
-const MENU_CATEGORIES = {
+type MenuTab = "Drinks" | "Breakfast" | "Desserts";
+
+type BackendMenuItem = {
+  name: string;
+};
+
+type BackendMenuResponse = {
+  drinks?: BackendMenuItem[];
+  breakfast?: BackendMenuItem[];
+  desserts?: BackendMenuItem[];
+};
+
+const FALLBACK_MENU: Record<MenuTab, string[]> = {
   Drinks: [
     "Iced Latte",
     "Hot Latte",
@@ -34,6 +46,23 @@ const MENU_CATEGORIES = {
   ],
 };
 
+function normalizeMenu(menu: BackendMenuResponse | null): Record<MenuTab, string[]> {
+  if (!menu) return FALLBACK_MENU;
+  const drinks = (menu.drinks ?? []).map((item) => item.name).filter(Boolean);
+  const breakfast = (menu.breakfast ?? [])
+    .map((item) => item.name)
+    .filter(Boolean);
+  const desserts = (menu.desserts ?? []).map((item) => item.name).filter(Boolean);
+  if (!drinks.length || !breakfast.length || !desserts.length) {
+    return FALLBACK_MENU;
+  }
+  return {
+    Drinks: drinks,
+    Breakfast: breakfast,
+    Desserts: desserts,
+  };
+}
+
 function slug(s: string): string {
   return s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
 }
@@ -43,9 +72,32 @@ type SmartMenuProps = {
 };
 
 export function SmartMenu({ menuContext }: SmartMenuProps) {
-  const [activeTab, setActiveTab] = useState<"Drinks" | "Breakfast" | "Desserts">("Drinks");
+  const [activeTab, setActiveTab] = useState<MenuTab>("Drinks");
+  const [menuCategories, setMenuCategories] =
+    useState<Record<MenuTab, string[]>>(FALLBACK_MENU);
 
   const contextLower = String(menuContext ?? "").toLowerCase();
+
+  useEffect(() => {
+    const baseUrl = getApiBaseUrl();
+    if (!baseUrl) return;
+    const controller = new AbortController();
+    const loadMenu = async () => {
+      try {
+        const res = await fetch(`${baseUrl}/menu`, {
+          method: "GET",
+          signal: controller.signal,
+        });
+        if (!res.ok) return;
+        const data = (await res.json()) as BackendMenuResponse;
+        setMenuCategories(normalizeMenu(data));
+      } catch {
+        // Keep fallback menu if backend menu can't be loaded.
+      }
+    };
+    void loadMenu();
+    return () => controller.abort();
+  }, []);
 
   // Update local active tab if the AI sends down a category context switch
   useEffect(() => {
@@ -74,7 +126,7 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
 
         {/* Category Tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-          {(Object.keys(MENU_CATEGORIES) as Array<keyof typeof MENU_CATEGORIES>).map((tab) => (
+          {(Object.keys(menuCategories) as Array<MenuTab>).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -90,7 +142,7 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
       </div>
 
       <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4 overflow-auto pb-4 pr-2 custom-scrollbar">
-        {MENU_CATEGORIES[activeTab].map((name) => {
+        {menuCategories[activeTab].map((name) => {
           const isVeganDrink = activeTab === "Drinks" && ["Matcha Latte", "Chai Latte", "Americano", "Cold Brew"].includes(name);
 
           let className = "flex items-center gap-4 p-3 rounded-2xl border transition-all duration-200 shadow-sm ";

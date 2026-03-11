@@ -62,6 +62,7 @@ jobs:
           env_vars: |
             GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }}
             GOOGLE_GENAI_USE_VERTEXAI=FALSE
+            BREW_AGENT_MODEL=gemini-2.5-flash-native-audio-preview-12-2025
 
       # ── Get Backend URL ──
       - name: Get backend URL

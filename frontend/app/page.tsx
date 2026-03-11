@@ -57,7 +57,7 @@ export default function Home() {
       stopMicRef.current = stop;
       setMicActive(true);
     });
-  }, [sendAudio, sendText]);
+  }, [sendAudio, sendText, sendTurnComplete]);
 
   useEffect(() => {
     if (state.connection === "open" && !micActive && !autoStarted) {
@@ -145,7 +145,7 @@ export default function Home() {
 
       {state.transcript && (
         <footer className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-sm shadow-lg border border-[#E8DCCB] px-6 py-3 rounded-full text-sm font-medium text-[#8D7B68] max-w-xl truncate pointer-events-none transition-all">
-          "{state.transcript}"
+          &ldquo;{state.transcript}&rdquo;
         </footer>
       )}
     </div>
