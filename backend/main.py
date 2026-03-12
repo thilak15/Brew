@@ -195,6 +195,7 @@ async def websocket_endpoint(
         )
         live_request_queue = LiveRequestQueue()
         live_queue_ref["queue"] = live_request_queue
+        session_clock = {"start": time.monotonic()}
 
         async def upstream_task() -> None:
             dropped_audio_chunks = 0
@@ -538,6 +539,7 @@ async def websocket_endpoint(
                                     )
                                     await _reset_live_stream("proactive_timer")
                                     live_session_start = time.monotonic()
+                                    session_clock["start"] = live_session_start
                                     total_events_received = 0
                                     last_event_summary = "(proactive_reset)"
                                     transient_retry_count = 0
@@ -568,6 +570,7 @@ async def websocket_endpoint(
                         )
                         await _reset_live_stream(f"stream_end attempt={transient_retry_count}")
                         live_session_start = time.monotonic()
+                        session_clock["start"] = live_session_start
                         total_events_received = 0
                         last_event_summary = "(reset)"
                         await asyncio.sleep(backoff_s)
@@ -597,6 +600,7 @@ async def websocket_endpoint(
                             )
                             await _reset_live_stream(f"exception attempt={transient_retry_count}")
                             live_session_start = time.monotonic()
+                            session_clock["start"] = live_session_start
                             total_events_received = 0
                             last_event_summary = "(reset)"
                             await asyncio.sleep(backoff_s)
@@ -617,9 +621,30 @@ async def websocket_endpoint(
                     session_id, connection_id,
                 )
 
+        async def watchdog_task() -> None:
+            """Force-close the Gemini queue if the session exceeds 9 minutes
+            without a proactive reset (e.g., idle after order completion)."""
+            hard_limit = PROACTIVE_RECONNECT_S + 60  # 9 minutes
+            while websocket.client_state.name == "CONNECTED":
+                await asyncio.sleep(30)
+                elapsed = time.monotonic() - session_clock["start"]
+                if elapsed >= hard_limit:
+                    logger.info(
+                        "Watchdog: session idle for %.0fs, forcing queue close session=%s conn=%s",
+                        elapsed, session_id, connection_id,
+                    )
+                    queue = live_queue_ref.get("queue")
+                    if queue is not None:
+                        try:
+                            queue.close()
+                        except Exception:
+                            pass
+                    session_clock["start"] = time.monotonic()
+
         await asyncio.gather(
             upstream_task(),
             downstream_task(),
+            watchdog_task(),
             return_exceptions=True,
         )
     finally:
