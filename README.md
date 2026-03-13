@@ -100,7 +100,7 @@ The system has four layers:
 - Handles upstream (browser to Gemini) and downstream (Gemini to browser) data flow as concurrent async tasks
 
 **3. Agent Layer (Google ADK)**
-- The agent is defined using Google's Agent Development Kit (ADK) with 15 tools for order management
+- The agent is defined using Google's Agent Development Kit (ADK) with 14 tools for order management
 - ADK's `run_live()` method establishes a persistent bidirectional stream with the Gemini Live API
 - Tools are plain Python functions with docstrings that the model uses for function calling:
   - `add_item` / `add_items` -- add single or batch items to the order
@@ -330,7 +330,7 @@ gcloud run services delete brew-backend --region us-central1 --quiet
 Brew/
 ├── backend/
 │   ├── main.py                    # FastAPI WebSocket server, ADK run_live() orchestration
-│   ├── agent.py                   # Google ADK agent with 15 order management tools
+│   ├── agent.py                   # Google ADK agent with 14 order management tools
 │   ├── order_state.py             # Per-session order state with Firestore persistence
 │   ├── menu.py                    # Menu loader, system prompt builder, item validation
 │   ├── menu.json                  # Full menu data: drinks, breakfast, desserts, modifiers
