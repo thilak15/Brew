@@ -9,6 +9,7 @@ import os
 import contextvars
 from google.adk.agents import Agent
 
+import json
 from menu import get_system_prompt, get_item_details, is_valid_modifier, get_item_base_price, get_modifier_price_impact, get_item_category
 from order_state import get_order_state
 
@@ -71,35 +72,66 @@ def _resolve_item_id(state, item_id: str) -> str:
                 return candidate
     return normalized
 
-def add_item(name: str, size: str, warmed: bool = False) -> str:
-    """Add an item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, Size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'. If the customer asks to warm up a food item, pass warmed=True."""
-    logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}', warmed={warmed})")
-    
+def _add_single_item(name: str, size: str, warmed: bool = False) -> dict:
+    """Internal helper: validate and add one item. Returns a result dict."""
     item_details = get_item_details(name)
     if not item_details:
         logger.warning(f"⚠️ TOOL WARNING: '{name}' is not on the menu.")
-        return f'{{"status": "error", "message": "Item {name} is not on the menu. Ask the customer to clarify."}}'
-        
+        return {"status": "error", "name": name, "message": f"Item {name} is not on the menu. Ask the customer to clarify."}
+
     allowed_sizes = [s.lower() for s in item_details.get("sizes", [])]
     if size.lower() not in allowed_sizes:
         logger.warning(f"⚠️ TOOL WARNING: Size '{size}' is invalid for {name}.")
-        return f'{{"status": "error", "message": "Invalid size {size} for {name}. Allowed: {allowed_sizes}. Ask the customer to clarify."}}'
+        return {"status": "error", "name": name, "message": f"Invalid size {size} for {name}. Allowed: {allowed_sizes}. Ask the customer to clarify."}
 
     state = _state()
     if not state:
         logger.error("❌ TOOL CALL FAILED: No active order session.")
-        return "No active order session."
-        
+        return {"status": "error", "name": name, "message": "No active order session."}
+
     base_price = float(item_details.get("base_price", 0.0))
     real_name = item_details["name"]
     item_id = state.add_item(real_name, size=size.title(), base_price=base_price, warmed=warmed)
-    # Auto-switch menu view to the category of the added item
     category = get_item_category(real_name)
     if category and getattr(state, 'menu_context', None) != category:
         state.menu_context = category
         logger.info(f"🔄 AUTO-SWITCH: Menu view → {category} (triggered by adding {real_name})")
     logger.info(f"✅ TOOL SUCCESS: Added item {item_id} | {size} {real_name}")
-    return f'{{"status": "success", "action": "added_item", "name": "{real_name}", "size": "{size}", "item_id": "{item_id}"}}'
+    return {"status": "success", "action": "added_item", "name": real_name, "size": size, "item_id": item_id}
+
+
+def add_item(name: str, size: str, warmed: bool = False) -> str:
+    """Add a SINGLE item to the order. Use exact names from the menu (e.g. 'Iced Latte', 'Cake Pop'). For drinks, size is required (Tall, Grande, or Venti). For food items, ALWAYS pass size='Regular'. If the customer asks to warm up a food item, pass warmed=True. IMPORTANT: If the customer orders MULTIPLE items in one sentence, use `add_items` instead."""
+    logger.info(f"👉 TOOL CALL: add_item(name='{name}', size='{size}', warmed={warmed})")
+    result = _add_single_item(name, size, warmed)
+    return json.dumps(result)
+
+
+def add_items(items_json: str) -> str:
+    """Add MULTIPLE items to the order in one batch call. Use this when the customer orders more than one item in a single sentence (e.g. "a Grande Iced Latte and a Cake Pop"). items_json is a JSON array of objects, each with keys: name (str, exact menu name), size (str, Tall/Grande/Venti/Regular), warmed (bool, optional, default false). Example: '[{"name": "Iced Latte", "size": "Grande"}, {"name": "Cake Pop", "size": "Regular", "warmed": true}]'. Returns a single combined result so you give ONE confirmation to the customer."""
+    logger.info(f"👉 TOOL CALL: add_items(items_json='{items_json[:200]}')")
+    try:
+        items = json.loads(items_json)
+    except (json.JSONDecodeError, TypeError):
+        logger.error(f"❌ TOOL CALL FAILED: Could not parse items_json: {items_json[:200]}")
+        return json.dumps({"status": "error", "message": "Invalid JSON in items_json. Pass a JSON array of objects."})
+
+    if not isinstance(items, list) or not items:
+        return json.dumps({"status": "error", "message": "items_json must be a non-empty JSON array."})
+
+    results = []
+    for entry in items:
+        name = entry.get("name", "")
+        size = entry.get("size", "Regular")
+        warmed = entry.get("warmed", False)
+        result = _add_single_item(name, size, warmed)
+        results.append(result)
+
+    added = [r for r in results if r["status"] == "success"]
+    errors = [r for r in results if r["status"] == "error"]
+    summary = {"status": "success", "added": added, "errors": errors, "total_added": len(added)}
+    logger.info(f"✅ BATCH ADD: {len(added)} items added, {len(errors)} errors")
+    return json.dumps(summary)
 
 
 def remove_item(item_id: str = "", name: str = "", size: str = "") -> str:
@@ -128,6 +160,36 @@ def remove_item(item_id: str = "", name: str = "", size: str = "") -> str:
 def remove_item_by_description(name: str, size: str = "") -> str:
     """Backward-compatible helper for older prompt variants."""
     return remove_item(name=name, size=size)
+
+
+def remove_items(items_json: str) -> str:
+    """Remove MULTIPLE items from the order in one batch call. Use this when the customer wants to remove more than one item in a single sentence (e.g. "remove the latte and the cake pop"). items_json is a JSON array of objects, each with keys: item_id (str, preferred) OR name (str) and optional size (str). Example: '[{"item_id": "item_1"}, {"name": "Cake Pop"}]'. Returns a single combined result so you give ONE confirmation."""
+    logger.info(f"👉 TOOL CALL: remove_items(items_json='{items_json[:200]}')")
+    try:
+        items = json.loads(items_json)
+    except (json.JSONDecodeError, TypeError):
+        return json.dumps({"status": "error", "message": "Invalid JSON in items_json."})
+
+    if not isinstance(items, list) or not items:
+        return json.dumps({"status": "error", "message": "items_json must be a non-empty JSON array."})
+
+    results = []
+    for entry in items:
+        result_str = remove_item(
+            item_id=entry.get("item_id", ""),
+            name=entry.get("name", ""),
+            size=entry.get("size", ""),
+        )
+        try:
+            results.append(json.loads(result_str.replace("'", '"')))
+        except (json.JSONDecodeError, TypeError):
+            results.append({"status": "unknown", "raw": result_str})
+
+    removed = [r for r in results if r.get("status") == "success"]
+    errors = [r for r in results if r.get("status") != "success"]
+    summary = {"status": "success", "removed": removed, "errors": errors, "total_removed": len(removed)}
+    logger.info(f"✅ BATCH REMOVE: {len(removed)} items removed, {len(errors)} errors")
+    return json.dumps(summary)
 
 
 def add_modifier(
@@ -164,6 +226,37 @@ def add_modifier(
         return f"{{'status': 'success', 'action': 'added_modifier', 'item_id': '{resolved}', 'modifier': '{value}', 'qty': {qty_int}}}"
     logger.error(f"❌ TOOL CALL FAILED: Item {resolved} not found.")
     return f"{{'status': 'error', 'message': 'Item {resolved} not found.'}}"
+
+
+def add_modifiers(modifiers_json: str) -> str:
+    """Add modifiers to MULTIPLE items in one batch call. Use this when the customer wants to apply modifiers across several items (e.g. "add oat milk to both drinks" or "extra shot on the latte and vanilla syrup on the mocha"). modifiers_json is a JSON array of objects, each with keys: item_id (str), modifier_type (str: syrup/milk_swap/topping/ice_level/warming), value (str: exact name from menu), quantity (str, optional, default '1'). Example: '[{"item_id": "item_1", "modifier_type": "milk_swap", "value": "Oat Milk"}, {"item_id": "item_2", "modifier_type": "syrup", "value": "Vanilla", "quantity": "2"}]'. Returns a single combined result so you give ONE confirmation."""
+    logger.info(f"👉 TOOL CALL: add_modifiers(modifiers_json='{modifiers_json[:200]}')")
+    try:
+        mods = json.loads(modifiers_json)
+    except (json.JSONDecodeError, TypeError):
+        return json.dumps({"status": "error", "message": "Invalid JSON in modifiers_json."})
+
+    if not isinstance(mods, list) or not mods:
+        return json.dumps({"status": "error", "message": "modifiers_json must be a non-empty JSON array."})
+
+    results = []
+    for entry in mods:
+        result_str = add_modifier(
+            item_id=entry.get("item_id", ""),
+            modifier_type=entry.get("modifier_type", ""),
+            value=entry.get("value", ""),
+            quantity=str(entry.get("quantity", "1")),
+        )
+        try:
+            results.append(json.loads(result_str.replace("'", '"')))
+        except (json.JSONDecodeError, TypeError):
+            results.append({"status": "unknown", "raw": result_str})
+
+    applied = [r for r in results if r.get("status") == "success"]
+    errors = [r for r in results if r.get("status") != "success"]
+    summary = {"status": "success", "applied": applied, "errors": errors, "total_applied": len(applied)}
+    logger.info(f"✅ BATCH MODIFIERS: {len(applied)} applied, {len(errors)} errors")
+    return json.dumps(summary)
 
 
 def remove_modifier(item_id: str, modifier_type: str, value: str) -> str:
@@ -311,9 +404,12 @@ root_agent = Agent(
     instruction=get_system_prompt(),
     tools=[
         add_item,
+        add_items,
         remove_item,
+        remove_items,
         remove_item_by_description,
         add_modifier,
+        add_modifiers,
         remove_modifier,
         set_modifier,
         set_ice_level,

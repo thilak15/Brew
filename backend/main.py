@@ -29,6 +29,19 @@ from google.genai import types
 
 from agent import root_agent, set_current_session
 from menu import get_menu_dict
+
+# ---------- ADK audio cache fix ----------
+# ADK 1.27.0 has a bug: input audio is cached unconditionally in
+# AudioCacheManager.cache_audio() but only flushed when save_live_blob=True.
+# Since we don't use artifact storage, the cache grows unbounded (thousands of
+# chunks) causing memory bloat and latency.  Monkey-patch it to a no-op.
+try:
+    from google.adk.flows.llm_flows import audio_cache_manager as _acm
+    _acm.AudioCacheManager.cache_audio = lambda self, *a, **kw: None  # type: ignore[assignment]
+    print("[brew] Patched AudioCacheManager.cache_audio → no-op (save_live_blob=False)")
+except Exception:
+    pass
+# ------------------------------------------
 from order_state import (
     get_order_state,
     register_order_state,
@@ -65,14 +78,13 @@ file_handler = logging.FileHandler(LOG_FILE)
 file_handler.setFormatter(formatter)
 
 root_logger = logging.getLogger()
-root_logger.setLevel(logging.DEBUG)
+root_logger.setLevel(logging.INFO)
 root_logger.addHandler(logging.StreamHandler())
 root_logger.addHandler(file_handler)
 
-# Specific loggers for visibility
-for logger_name in ["google.adk", "google.genai", "uvicorn", "uvicorn.access"]:
+for logger_name in ["uvicorn", "uvicorn.access"]:
     l = logging.getLogger(logger_name)
-    l.setLevel(logging.DEBUG)
+    l.setLevel(logging.INFO)
     l.addHandler(file_handler)
 
 turn_trace_logger = logging.getLogger("turn_trace")
@@ -97,9 +109,8 @@ def _is_transient_live_exception(exc: Exception) -> bool:
     return any(h in text for h in ("1007", "1008", "1011", "service is currently unavailable", "deadline expired", "invalid argument", "connection is closed", "connection closed"))
 
 
-# Increase verbosity specifically for the agent frameworks
-logging.getLogger("google.adk").setLevel(logging.DEBUG)
-logging.getLogger("google.genai").setLevel(logging.DEBUG)
+logging.getLogger("google.adk").setLevel(logging.WARNING)
+logging.getLogger("google.genai").setLevel(logging.WARNING)
 
 APP_NAME = "brew"
 

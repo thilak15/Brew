@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { getApiBaseUrl } from "@/lib/backendUrl";
 
 type MenuTab = "Drinks" | "Breakfast" | "Desserts";
@@ -154,14 +155,15 @@ export function SmartMenu({ menuContext }: SmartMenuProps) {
             className += " bg-white border-[#E8DCCB] hover:border-[#D4A373] hover:shadow-md hover:-translate-y-1 cursor-default";
           }
 
-          const imgSrc = `/images/menu/${slug(name)}.png`;
+          const imgSrc = `/images/menu/${slug(name)}.webp`;
           return (
             <li key={name} className={className}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <div className="relative w-14 h-14 shrink-0 bg-[#FAF4ED] rounded-xl p-1 overflow-hidden shadow-inner flex items-center justify-center">
-                <img
+                <Image
                   src={imgSrc}
                   alt={name}
+                  width={128}
+                  height={128}
                   className="object-cover w-full h-full rounded-lg"
                   onError={(e) => {
                     (e.target as HTMLImageElement).style.display = "none";
