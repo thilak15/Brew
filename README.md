@@ -40,7 +40,7 @@ Brew replaces the human operator with an AI barista that:
 
 ## Demo Video
 
-> [Link to demo video on YouTube]
+> https://youtu.be/2B67rxfXkMM
 
 ---
 
