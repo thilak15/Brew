@@ -8,6 +8,7 @@ from __future__ import annotations
 import os
 import contextvars
 from google.adk.agents import Agent
+from google.genai import types
 
 import json
 from menu import get_system_prompt, get_item_details, is_valid_modifier, get_item_base_price, get_modifier_price_impact, get_item_category
@@ -399,9 +400,12 @@ def get_order_summary() -> str:
 
 root_agent = Agent(
     name="brew_agent",
-    model=os.environ["BREW_AGENT_MODEL"],  # Set in backend/.env — single source of truth
+    model=os.environ["BREW_AGENT_MODEL"],
     description="Drive-thru barista that takes beverage orders with modifiers.",
     instruction=get_system_prompt(),
+    generate_content_config=types.GenerateContentConfig(
+        temperature=0.2,
+    ),
     tools=[
         add_item,
         add_items,

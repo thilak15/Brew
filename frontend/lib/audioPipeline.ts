@@ -104,6 +104,9 @@ const PLAYBACK_RATE = 24000;
 let playbackContext: AudioContext | null = null;
 const playbackQueue: ArrayBuffer[] = [];
 let isPlaying = false;
+let discardStaleAudio = false;
+let interruptedAtMs = 0;
+const STALE_AUDIO_WINDOW_MS = 200;
 
 function getPlaybackContext(): AudioContext {
   if (!playbackContext) {
@@ -142,6 +145,8 @@ function playNextInQueue(): void {
 
 /** Stop current playback and clear the queue (used when the user interrupts the AI). */
 export function interruptAudioPlayback(): void {
+  discardStaleAudio = true;
+  interruptedAtMs = performance.now();
   playbackQueue.length = 0;
   if (activeNode) {
     activeNode.onended = null;
@@ -162,8 +167,12 @@ export function prepareAudioPlayback(): void {
 }
 
 export function playAudioChunk(int16Data: ArrayBuffer): void {
-  // Drop lagging network audio chunks if the user is currently speaking
   if (isUserSpeaking) return;
+
+  if (discardStaleAudio) {
+    if (performance.now() - interruptedAtMs < STALE_AUDIO_WINDOW_MS) return;
+    discardStaleAudio = false;
+  }
 
   if (playbackQueue.length === 0) prepareAudioPlayback();
   playbackQueue.push(int16Data);

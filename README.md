@@ -8,7 +8,8 @@
   <a href="#quick-start">Quick Start</a> |
   <a href="#architecture">Architecture</a> |
   <a href="#google-cloud-deployment">Cloud Deployment</a> |
-  <a href="#demo-video">Demo</a>
+  <a href="#demo-video">Demo</a> |
+  <a href="#whats-next-for-brew">What's Next</a>
 </p>
 
 ---
@@ -405,6 +406,16 @@ Brew/
 | [FastAPI](https://github.com/tiangolo/fastapi) | MIT | Backend web framework |
 | [Next.js](https://github.com/vercel/next.js) | MIT | Frontend React framework |
 | [hark](https://github.com/otalk/hark) | MIT | Speech activity detection for voice input |
+
+---
+
+## What's Next for Brew
+
+**Menu-agnostic deployment.** The menu is loaded from a JSON file. Swap it out, and Brew becomes a taco shop, a pizza place, or a pharmacy pickup counter. The next step is building a pipeline that takes any restaurant's menu and automatically generates a ready-to-deploy voice ordering agent -- menu data, system prompt, and item images included.
+
+**Multilingual support with real-time language switching.** Gemini's native audio model already understands multiple languages. The direction is automatic language detection mid-conversation -- if a customer starts in English and switches to Spanish, the agent detects the shift and responds in Spanish without any button press or setting change. In areas with high bilingual traffic, this removes a friction point that most ordering systems don't attempt to address.
+
+The hard part was proving that a live voice agent can handle complex, modifier-heavy ordering with interruptions, corrections, and batch operations -- correctly and reliably. That's done. Now it's about making it work for anyone, in any language.
 
 ---
 
